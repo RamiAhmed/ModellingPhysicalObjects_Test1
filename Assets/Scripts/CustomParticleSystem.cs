@@ -137,24 +137,24 @@ public class CustomParticleSystem : MonoBehaviour {
 	}
 	
 	private void advanceTime(float deltaTime) {
-		/*CustomPhaseSpaceState phaseSpaceState = this.CurrentPhaseSpaceState;
+		CustomPhaseSpaceState phaseSpaceState = this.CurrentPhaseSpaceState;
 		if (phaseSpaceState != null) {
 			killOldParticles();
 			
 			float timeStart = this.SystemTime;
 			float timeEnd = timeStart + deltaTime;
 
-			CustomPhaseSpaceState newState = phaseSpaceState.ComputeStateDerivate(phaseSpaceState);
+			double[] newState = phaseSpaceState.ComputeStateDerivate(timeEnd, phaseSpaceState);
 			
-			this.CurrentPhaseSpaceState = newState;
+			this.CurrentPhaseSpaceState.PhaseSpaceState = newState;
 			this.SystemTime = timeEnd;
 			
 			advanceParticlesAges(deltaTime);
 		}
 		else {
 			Debug.LogWarning("Error in advanceTime: CurrentPhaseSpaceState is null");
-		}*/
-		killOldParticles();
+		}
+		/*killOldParticles();
 
 		AggregateAllForces();
 
@@ -168,7 +168,7 @@ public class CustomParticleSystem : MonoBehaviour {
 			particle.Velocity = accelerations[i];
 		}
 
-		advanceParticlesAges(deltaTime);
+		advanceParticlesAges(deltaTime);*/
 	}
 	
 	
