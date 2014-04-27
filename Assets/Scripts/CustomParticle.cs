@@ -31,6 +31,8 @@ public class CustomParticle : CustomBase {
 		this.Velocity = velocity;
 		this.Fixed = bFixed;
 		this.LifeSpan = lifeSpan;
+
+		this.transform.parent = particleSystem.transform;
 	}
 	
 	public void ClearForce() {

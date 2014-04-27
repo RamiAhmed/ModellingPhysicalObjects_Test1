@@ -32,18 +32,18 @@ public class CustomPhaseSpaceState {
 		List<Vector3> velocities = this.CustomParticleSystem.GetParticlesVelocities();
 
 		//double[] positionsArray = new double[positions.Count];
-		for (int i = 0; i < positions.Count; i++) {
-			PhaseSpaceState[3 * i - 2] = positions[i].x;
-			PhaseSpaceState[3 * i - 1] = positions[i].y;
-			PhaseSpaceState[3 * i - 0] = positions[i].z;
+		for (int i = 1; i <= positions.Count; i++) {
+			PhaseSpaceState[3 * i - 3] = positions[i-1].x;
+			PhaseSpaceState[3 * i - 2] = positions[i-1].y;
+			PhaseSpaceState[3 * i - 1] = positions[i-1].z;
 		}
 
 		int particleCount = this.CustomParticleSystem.Particles.Count;
 		//double[] velocitiesArray = new double[velocities.Count];
 		for (int i = 0; i < velocities.Count; i++) {
-			PhaseSpaceState[3 * (i + particleCount) - 2] = velocities[i].x;
-			PhaseSpaceState[3 * (i + particleCount) - 1] = velocities[i].y;
-			PhaseSpaceState[3 * (i + particleCount) - 0] = velocities[i].z;
+			PhaseSpaceState[3 * (i + particleCount) - 3] = velocities[i-1].x;
+			PhaseSpaceState[3 * (i + particleCount) - 2] = velocities[i-1].y;
+			PhaseSpaceState[3 * (i + particleCount) - 1] = velocities[i-1].z;
 		}
 
 		//PhaseSpaceState[0] = positionsArray;
@@ -55,51 +55,62 @@ public class CustomPhaseSpaceState {
 	}
 
 	public void SetPhaseSpaceState() {
+		SetPhaseSpaceState(this.PhaseSpaceState);
+	}
+
+	public void SetPhaseSpaceState(double[] phaseSpaceState) {
 		int particleCount = this.CustomParticleSystem.Particles.Count;
 		if (particleCount > 0) {
-			for (int i = 0; i < particleCount; i++) {
-				CustomParticle particle = this.CustomParticleSystem.Particles[i];
+			for (int i = 1; i <= particleCount; i++) {
+				CustomParticle particle = this.CustomParticleSystem.Particles[i-1];
 
 				particle.Position = new Vector3(
-								(float)(PhaseSpaceState[3 * i - 2]),
-								(float)(PhaseSpaceState[3 * i - 1]),
-								(float)(PhaseSpaceState[3 * i])
+								(float)(phaseSpaceState[3 * i - 3]),
+								(float)(phaseSpaceState[3 * i - 2]),
+								(float)(phaseSpaceState[3 * i - 1])
 								);
 				particle.Velocity = new Vector3(
-								(float)(PhaseSpaceState[3 * (i + particleCount) - 2]),
-								(float)(PhaseSpaceState[3 * (i + particleCount) - 1]),
-								(float)(PhaseSpaceState[3 * (i + particleCount)])
+								(float)(phaseSpaceState[3 * (i + particleCount) - 3]),
+								(float)(phaseSpaceState[3 * (i + particleCount) - 2]),
+								(float)(phaseSpaceState[3 * (i + particleCount) - 1])
 								);
 			}
 		}
 	}
 
 	public double[] ComputeStateDerivate(float time, CustomPhaseSpaceState phaseSpaceState) {
-		if (this.CustomParticleSystem != null) {
-			double[] phaseSpace = PhaseSpaceState; // transposed ??
+		double[] phaseSpace = phaseSpaceState.PhaseSpaceState; // transposed ??
+		return ComputeStateDerivate(new double[]{time}, phaseSpace);
+	}
 
-			SetPhaseSpaceState();
+	public double[] ComputeStateDerivate(float time, double[] phaseSpaceState, params int[] vargin) {
+		return ComputeStateDerivate(new double[]{time}, phaseSpaceState, vargin);
+	}
+
+	public double[] ComputeStateDerivate(double time, double[] phaseSpaceState, params int[] vargin) {
+		return ComputeStateDerivate(new double[]{time}, phaseSpaceState, vargin);
+	}
+
+	public double[] ComputeStateDerivate(double[] time, double[] phaseSpaceState, params int[] vargin) {
+		if (this.CustomParticleSystem != null) {
+			SetPhaseSpaceState(phaseSpaceState);
 
 			this.CustomParticleSystem.AggregateAllForces();
 
 			List<Vector3> velocities = this.CustomParticleSystem.GetParticlesVelocities();
 			List<Vector3> accelerations = this.CustomParticleSystem.GetParticlesAccelerations();
-			/*
-			PhaseSpaceState[0] = velocities;
-			PhaseSpaceState[1] = accelerations;*/
 
-			for (int i = 0; i < velocities.Count; i++) {
-				PhaseSpaceState[3 * i - 2] = velocities[i].x;
-				PhaseSpaceState[3 * i - 1] = velocities[i].y;
-				PhaseSpaceState[3 * i - 0] = velocities[i].z;
+			for (int i = 1; i <= velocities.Count; i++) {
+				PhaseSpaceState[3 * i - 3] = velocities[i-1].x;
+				PhaseSpaceState[3 * i - 2] = velocities[i-1].y;
+				PhaseSpaceState[3 * i - 1] = velocities[i-1].z;
 			}
 			
 			int particleCount = this.CustomParticleSystem.Particles.Count;
-			//double[] velocitiesArray = new double[velocities.Count];
-			for (int i = 0; i < accelerations.Count; i++) {
-				PhaseSpaceState[3 * (i + particleCount) - 2] = accelerations[i].x;
-				PhaseSpaceState[3 * (i + particleCount) - 1] = accelerations[i].y;
-				PhaseSpaceState[3 * (i + particleCount) - 0] = accelerations[i].z;
+			for (int i = 1; i <= accelerations.Count; i++) {
+				PhaseSpaceState[3 * (i + particleCount) - 3] = accelerations[i-1].x;
+				PhaseSpaceState[3 * (i + particleCount) - 2] = accelerations[i-1].y;
+				PhaseSpaceState[3 * (i + particleCount) - 1] = accelerations[i-1].z;
 			}
 
 
@@ -110,61 +121,4 @@ public class CustomPhaseSpaceState {
 			return null;
 		}
 	}
-
-
-
-/*
-	public List<Vector3> Positions = new List<Vector3>();
-	public List<Vector3> Velocities = new List<Vector3>();
-
-	public CustomParticleSystem CustomParticleSystem { get; set; }
-
-	public CustomPhaseSpaceState(CustomParticleSystem particleSystem) {
-		this.CustomParticleSystem = particleSystem;
-	}
-	
-	public void SetPhaseSpaceSet(CustomPhaseSpaceState phaseSpaceState) {
-		SetPhaseSpaceSet(phaseSpaceState.Positions, phaseSpaceState.Velocities);
-	}
-	
-	public void SetPhaseSpaceSet(List<Vector3> positions, List<Vector3> velocities) {
-		this.Positions = positions;
-		this.Velocities = velocities;
-		
-		if (this.CustomParticleSystem != null) {
-			if (this.CustomParticleSystem.Particles.Count > 0) {
-				for (int i = 0; i < this.CustomParticleSystem.Particles.Count; i++) {
-					CustomParticle particle = this.CustomParticleSystem.Particles[i];
-
-					if (i < positions.Count)
-						particle.Position = positions[i];
-
-					if (i < velocities.Count) 
-						particle.Velocity = velocities[i];
-				}
-			}
-		}
-	}*/
-	/*
-	public CustomPhaseSpaceState ComputeStateDerivate(CustomPhaseSpaceState phaseSpaceState) {	
-		if (this.CustomParticleSystem != null) {
-			this.SetPhaseSpaceSet(phaseSpaceState);
-			this.CustomParticleSystem.AggregateAllForces();
-			
-			List<Vector3> velocities = this.CustomParticleSystem.GetParticlesVelocities();
-			List<Vector3> accelerations = this.CustomParticleSystem.GetParticlesAccelerations();
-			
-			CustomPhaseSpaceState newState = new CustomPhaseSpaceState(this.CustomParticleSystem);
-			newState.Positions = velocities;
-			newState.Velocities = accelerations;
-			
-			return newState;
-		}
-		else {
-			Debug.LogWarning("No particle system set on phase space state");
-			return null;
-		}
-
-	}
-	*/
 }

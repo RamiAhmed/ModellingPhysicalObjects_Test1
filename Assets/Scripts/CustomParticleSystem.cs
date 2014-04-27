@@ -135,19 +135,110 @@ public class CustomParticleSystem : MonoBehaviour {
 			}
 		}
 	}
+
+	private double[] diff(double[] array) {
+		double[] returnList = new double[array.Length];
+		for (int i = 0; i < array.Length-1; i++) {
+			returnList[i] = array[i+1] - array[i]; 
+		}
+		return returnList;
+	}
+
+	private bool getIsAnyValueZero(double[] array) {
+		foreach (double point in array) {
+			if (point <= 0.0)
+				return true;
+		}
+
+		return false;
+	}
+
+	private double[][] ode4(double[] tspan, double[] y0, params int[] vargin) {
+		double[] h = diff(tspan);
+		if (getIsAnyValueZero(h)) {
+			Debug.LogWarning("Entries of TSPAN are not in order");
+		}
+
+		double[] f0 = this.CurrentPhaseSpaceState.ComputeStateDerivate((float)tspan[0], y0, vargin);
+		if (f0.Length != y0.Length) {
+			Debug.LogWarning("Inconsistent sizes of Y0 and f(t0,y0).");
+		}
+
+		int neq = y0.Length;
+		int N = tspan.Length;
+		double[][] Y = new double[neq][];
+		//double[][] F = new double[neq][4];
+
+		for (int g = 0; g < N; g++) {
+			Y[g] = new double[N];
+		}
+
+
+		for (int i = 0; i < neq; i++) {
+			Y[0][i] = y0[i];
+		}
+
+		CustomPhaseSpaceState phaseSpaceState = this.CurrentPhaseSpaceState;
+
+		int x = 0;
+
+		for (int j = 1; j < N; j++) {
+			double ti = tspan[j-1];
+			double hi = h[j-1];
+			double[] yi = new double[neq];
+			for (int k = 0; k < neq; k++) {
+				yi[k] = Y[k][j-1];
+			}
+
+			double[] f1 = phaseSpaceState.ComputeStateDerivate(ti, yi, vargin);
+
+			double[] fyi = new double[yi.Length];
+			for (x = 0; x < yi.Length; x++) {
+				fyi[x] = yi[x] + 0.5 * hi * f1[x];
+			}
+			double[] f2 = phaseSpaceState.ComputeStateDerivate(ti+0.5*hi, fyi, vargin);
+
+			for (x = 0; x < yi.Length; x++) {
+				fyi[x] = yi[x] + 0.5 * hi * f2[x];
+			}
+			double[] f3 = phaseSpaceState.ComputeStateDerivate(ti+0.5*hi, fyi, vargin);
+
+			for (x = 0; x < yi.Length; x++) {
+				fyi[x] = yi[x] * hi * f3[x];
+			}
+			double[] f4 = phaseSpaceState.ComputeStateDerivate(tspan[j], fyi, vargin);
+
+			double[] yFinal = new double[yi.Length];
+			for (x = 0; x < yi.Length; x++) {
+				yFinal[x] = yi[x] + (hi/6)*f1[x] + 2 * f2[x] + 2 * f3[x] + f4[x];
+			};
+
+			for (int m = 1; m < yFinal.Length; m++) {
+				Y[j][m] = yFinal[m];
+			}
+		}
+
+		return Y;
+	}
 	
 	private void advanceTime(float deltaTime) {
 		CustomPhaseSpaceState phaseSpaceState = this.CurrentPhaseSpaceState;
 		if (phaseSpaceState != null) {
 			killOldParticles();
 			
-			float timeStart = this.SystemTime;
-			float timeEnd = timeStart + deltaTime;
+			double timeStart = this.SystemTime;
+			double timeEnd = timeStart + deltaTime;
 
-			double[] newState = phaseSpaceState.ComputeStateDerivate(timeEnd, phaseSpaceState);
+			//double[] newState = phaseSpaceState.ComputeStateDerivate(timeEnd, phaseSpaceState);
+			double[][] phaseSpaceStates = ode4(new double[]{timeStart,timeEnd}, phaseSpaceState.PhaseSpaceState);
+			double[] newState = new double[phaseSpaceStates.GetLength(0)];
+			for (int i = 0; i < newState.Length; i++) {
+				newState[i] = phaseSpaceStates[2][i];
+			}
 			
-			this.CurrentPhaseSpaceState.PhaseSpaceState = newState;
-			this.SystemTime = timeEnd;
+			//this.CurrentPhaseSpaceState.PhaseSpaceState = newState;
+			phaseSpaceState.SetPhaseSpaceState(newState);
+			this.SystemTime = (float)timeEnd;
 			
 			advanceParticlesAges(deltaTime);
 		}

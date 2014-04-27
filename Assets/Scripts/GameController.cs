@@ -65,5 +65,9 @@ public class GameController : MonoBehaviour {
 		if (Input.GetKeyDown(KeyCode.Space)) {
 			AddNewParticleSystem();
 		}
+
+		if (Input.GetKeyDown(KeyCode.Plus) || Input.GetKeyDown(KeyCode.KeypadPlus)) {
+			addNewParticle(ParticleSystems[ParticleSystems.Count-1], this.ParticleMass, this.ParticleStartPosition, this.ParticleStartVelocity, this.ParticleDefaultFixed, this.ParticleDefaultLifespan);
+		}
 	}
 }
