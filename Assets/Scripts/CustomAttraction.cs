@@ -28,6 +28,6 @@ public class CustomAttraction : CustomBase {
 
 	void OnDrawGizmos() {
 		Gizmos.color = Color.red;
-		Gizmos.DrawRay(Particle1.Position, (Particle2.Position - Particle1.Position));
+		Gizmos.DrawLine(Particle1.transform.parent.transform.position + Particle1.Position, Particle2.transform.parent.transform.position + Particle2.Position);
 	}
 }

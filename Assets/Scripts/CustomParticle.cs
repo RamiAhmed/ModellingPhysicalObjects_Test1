@@ -35,6 +35,8 @@ public class CustomParticle : CustomBase {
 		this.ClearForce();
 
 		this.transform.parent = particleSystem.transform;
+
+		this.name = "Particle " + this.CustomParticleSystem.Particles.IndexOf(this).ToString();
 	}
 	
 	public void ClearForce() {

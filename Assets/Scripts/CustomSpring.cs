@@ -34,6 +34,6 @@ public class CustomSpring : CustomBase {
 
 	void OnDrawGizmos() {
 		Gizmos.color = Color.yellow;
-		Gizmos.DrawLine(Particle1.Position, Particle2.Position);
+		Gizmos.DrawLine(Particle1.transform.parent.transform.position + Particle1.Position, Particle2.transform.parent.transform.position + Particle2.Position);
 	}
 }

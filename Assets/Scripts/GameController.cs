@@ -93,7 +93,7 @@ public class GameController : MonoBehaviour {
 	private void addNewBeam() {
 		Vector3 gravity = new Vector3(0f, 0f, 0f);
 		float drag = 0.01f;
-		int particleCount = 2;
+		int particleCount = 24;
 		float particleMass = 1000f;
 		Vector3 particleStartPos = new Vector3(-50f, 1, 50f);
 		Vector3 particleInitialVelocity = new Vector3(Random.value, Random.value, Random.value);
@@ -101,21 +101,22 @@ public class GameController : MonoBehaviour {
 		CustomParticleSystem beamSystem = AddNewParticleSystem(gravity, drag, 0, 0f, Vector3.zero, Vector3.zero, false, 0f);
 
 		CustomParticle leaderParticle = addNewParticle(beamSystem, particleMass, particleStartPos, new Vector3(1f, 1f, 1f), true, 0f);
+		leaderParticle.name = "Leader Particle";
 
-		float leaderAttractionStrength = 15f;
-		float leaderAttractionMinimumDistance = 5f;
+		float leaderAttractionStrength = 0.5f;
+		float leaderAttractionMinimumDistance = 0.1f;
 		for (int i = 0; i < particleCount-1; i++) {
-			CustomParticle particle = addNewParticle(beamSystem, particleMass, particleStartPos, particleInitialVelocity, false, particleLifeSpan);
+			CustomParticle particle = addNewParticle(beamSystem, particleMass, particleStartPos + Random.insideUnitSphere, particleInitialVelocity, false, particleLifeSpan);
 
 			CustomAttraction leaderAttraction = beamSystem.gameObject.AddComponent<CustomAttraction>();
 			leaderAttraction.Initialize(beamSystem, particle, leaderParticle, leaderAttractionStrength, leaderAttractionMinimumDistance);
 		}
 
-		float springRestLength = 1f;
-		float springStrength = 50f;
-		float springDamping = 0.2f;
+		float springRestLength = 10f;
+		float springStrength = 15f;
+		float springDamping = 0.95f;
 
-		for (int j = 1; j < particleCount; j++) {
+		for (int j = 2; j < particleCount; j++) {
 			CustomParticle particle1 = beamSystem.Particles[j-1];
 			CustomParticle particle2 = beamSystem.Particles[j];
 
