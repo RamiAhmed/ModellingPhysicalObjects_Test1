@@ -31,6 +31,13 @@ public class CustomParticleSystem : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 		advanceTime(Time.deltaTime);
+
+		/*if (this.Particles.Count > 0) {
+			CustomParticle testParticle = this.Particles[0];
+			Debug.Log("Particle position: " + testParticle.Position);
+			Debug.Log("Particle velocity: " + testParticle.Velocity);
+			Debug.Log("Particle acceleration: " + testParticle.Force/testParticle.Mass);
+		}*/
 	}
 	
 	/* PRIVATE METHODS */
@@ -127,7 +134,16 @@ public class CustomParticleSystem : MonoBehaviour {
 			}
 		}
 	}
-	
+
+	private void aggregateAllForces() {
+		clearParticlesForces();
+		
+		aggregateSpringsForces();
+		aggregateAttractionsForces();
+		aggregateDragForces();
+		aggregateGravityForces();
+	}
+
 	private void advanceParticlesAges(float deltaTime) {
 		if (Particles.Count > 0) {
 			foreach (CustomParticle particle in Particles) {
@@ -144,7 +160,7 @@ public class CustomParticleSystem : MonoBehaviour {
 			for (int i = 0; i < particleCount; i++) {
 				CustomParticle particle = this.Particles[i];
 
-				particle.Position = new Vector3(phaseSpaceState[i].x, phaseSpaceState[i].y, phaseSpaceState[i].z);
+				particle.Position += new Vector3(phaseSpaceState[i].x, phaseSpaceState[i].y, phaseSpaceState[i].z);
 				particle.Velocity = new Vector3(phaseSpaceState[i].xd, phaseSpaceState[i].yd, phaseSpaceState[i].zd);
 			}
 		}
@@ -182,7 +198,7 @@ public class CustomParticleSystem : MonoBehaviour {
 		if (this.CurrentPhaseSpaceState != null) {
 //			List<CustomPhaseSpaceState> currentPhaseSpace = getPhaseSpaceState();
 
-			AggregateAllForces();
+			aggregateAllForces();
 
 			newState = new List<CustomPhaseSpaceState>();
 			List<Vector3> velocities = GetParticlesVelocities();
@@ -217,6 +233,8 @@ public class CustomParticleSystem : MonoBehaviour {
 			//List<CustomPhaseSpaceState> phaseSpaceState = getPhaseSpaceState();
 
 			List<CustomPhaseSpaceState> newState = computeStateDerivate();
+			//Debug.Log("Computed new phase space state: " + newState[0].ToString());
+			this.CurrentPhaseSpaceState = newState;
 
 			setPhaseSpaceState(newState);
 
@@ -228,16 +246,6 @@ public class CustomParticleSystem : MonoBehaviour {
 	
 	
 	/* PUBLIC METHODS */
-	public void AggregateAllForces() {
-		clearParticlesForces();
-		
-		aggregateSpringsForces();
-		aggregateAttractionsForces();
-		aggregateDragForces();
-		aggregateGravityForces();
-	}
-
-	
 	public List<Vector3> GetParticlesPositions() {
 		if (Particles.Count > 0) {
 			List<Vector3> particlePositions = new List<Vector3>();

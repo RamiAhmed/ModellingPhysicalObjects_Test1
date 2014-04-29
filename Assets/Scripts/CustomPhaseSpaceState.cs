@@ -20,4 +20,9 @@ public class CustomPhaseSpaceState {
 		this.yd = 0f;
 		this.zd = 0f;
 	}
+
+	public override string ToString ()
+	{
+		return "(" + this.x + ", " + this.y + ", " + this.z + "), (" + this.xd + ", " + this.yd + ", " + this.zd + ")";
+	}
 }
