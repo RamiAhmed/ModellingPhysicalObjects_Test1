@@ -59,4 +59,26 @@ public class CustomParticle : CustomBase {
 			
 		}
 	}
+
+	/*void OnTriggerEnter(Collider other) {
+		if (!this.Fixed) {
+			if (other.tag.Contains("Particle")) {
+				if (!other.GetComponent<CustomParticle>().Fixed) {
+					this.Velocity *= -1;
+					Debug.Log("Particle collision!");
+				}
+			}
+		}
+	}*/
+	void OnCollisionEnter(Collision collision) { 
+		if (!this.Fixed) {
+			if (collision.gameObject.tag.Contains("Particle")) {
+				if  (!collision.gameObject.GetComponent<CustomParticle>().Fixed) {
+					this.Velocity *= -1;
+					Debug.Log("Particle collision!");
+				}
+			}
+		}
+	}
+
 }

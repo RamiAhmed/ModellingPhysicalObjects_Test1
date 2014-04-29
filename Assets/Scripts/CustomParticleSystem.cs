@@ -4,13 +4,15 @@ using System.Collections.Generic;
 
 public class CustomParticleSystem : MonoBehaviour {
 
+	public float SamplingRate = 10f; // 10 ms 
+
 	public Vector3 Position { 
 		get { return this.transform.position; }
 		set { this.transform.position = value; }
 	}
 	
-	public Vector3 Gravity { get; set; }
-	public float Drag { get; set; }
+	public Vector3 Gravity = Vector3.zero;
+	public float Drag = 0f;
 	
 	public List<CustomParticle> Particles = new List<CustomParticle>();
 	public List<CustomSpring> Springs = new List<CustomSpring>();
@@ -19,6 +21,8 @@ public class CustomParticleSystem : MonoBehaviour {
 	//public float SystemTime { get; private set; }
 	
 	public List<CustomPhaseSpaceState> CurrentPhaseSpaceState { get; private set; }
+
+	private float lastSample = 0f;
 	
 	// Use this for initialization
 	void Start () {
@@ -35,14 +39,11 @@ public class CustomParticleSystem : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-		advanceTime(Time.deltaTime);
+		if (Time.time - lastSample > SamplingRate/1000f) {
+			advanceTime(Time.deltaTime);
 
-		/*if (this.Particles.Count > 0) {
-			CustomParticle testParticle = this.Particles[0];
-			Debug.Log("Particle position: " + testParticle.Position);
-			Debug.Log("Particle velocity: " + testParticle.Velocity);
-			Debug.Log("Particle acceleration: " + testParticle.Force/testParticle.Mass);
-		}*/
+			lastSample = Time.time;
+		}
 	}
 	
 	/* PRIVATE METHODS */

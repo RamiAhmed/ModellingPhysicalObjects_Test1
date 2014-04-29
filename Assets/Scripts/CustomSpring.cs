@@ -6,9 +6,9 @@ public class CustomSpring : CustomBase {
 	public CustomParticle Particle1 { get; private set; }
 	public CustomParticle Particle2 { get; private set; }
 	
-	public float RestLength { get; private set; }
-	public float Strength { get; private set; }
-	public float Damping { get; private set; }
+	public float RestLength = 0f;
+	public float Strength = 0f;
+	public float Damping = 0f;
 
 	public void Initialize(CustomParticleSystem particleSystem, CustomParticle particle1, CustomParticle particle2) {
 		Initialize(particleSystem, particle1, particle2, 1f, 1f, 0f);
