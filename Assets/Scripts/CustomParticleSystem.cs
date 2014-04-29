@@ -3,6 +3,11 @@ using System.Collections;
 using System.Collections.Generic;
 
 public class CustomParticleSystem : MonoBehaviour {
+
+	public Vector3 Position { 
+		get { return this.transform.position; }
+		set { this.transform.position = value; }
+	}
 	
 	public Vector3 Gravity { get; set; }
 	public float Drag { get; set; }

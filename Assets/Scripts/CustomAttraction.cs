@@ -9,28 +9,25 @@ public class CustomAttraction : CustomBase {
 	public float Strength { get; private set; }
 	public float MinimumDistance { get; private set; }
 	
-	// Use this for initialization
-	void Start () {
-		
-	}
-	
 	public void Initialize(CustomParticleSystem particleSystem, CustomParticle particle1, CustomParticle particle2) {
 		Initialize(particleSystem, particle1, particle2, 1f, 0f);
 	}
 	
 	public void Initialize(CustomParticleSystem particleSystem, CustomParticle particle1, CustomParticle particle2, float strength, float minimumDistance) {
-		
 		this.CustomParticleSystem = particleSystem;
+		this.CustomParticleSystem.Attractions.Add(this);
 		
 		this.Particle1 = particle1;
 		this.Particle2 = particle2;
 		
 		this.Strength = strength;
 		this.MinimumDistance = minimumDistance;
+
+//		this.transform.parent = particleSystem.transform;
 	}
-	
-	// Update is called once per frame
-	void Update () {
-		
+
+	void OnDrawGizmos() {
+		Gizmos.color = Color.red;
+		Gizmos.DrawRay(Particle1.Position, (Particle2.Position - Particle1.Position));
 	}
 }

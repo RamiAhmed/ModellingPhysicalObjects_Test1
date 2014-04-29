@@ -3,19 +3,19 @@ using System.Collections;
 
 public class CustomParticle : CustomBase {
 	
-	public float Mass { get; private set; }
+	public float Mass = 1f;
 	public Vector3 Position {
-		get { return this.transform.position; }
-		set { this.transform.position = value; }
+		get { return this.transform.localPosition; }
+		set { this.transform.localPosition = value; }
 	}
 	
-	public Vector3 Velocity { get; set; }
+	public Vector3 Velocity = Vector3.zero;
 	
-	public bool Fixed { get; private set; }
-	public float LifeSpan { get; private set; }
-	public float Age { get; set; }
+	public bool Fixed = false;
+	public float LifeSpan = 0f;
+	public float Age = 0f;
 	
-	public Vector3 Force { get; private set; }
+	public Vector3 Force = Vector3.zero;
 
 
 	public void Initialize(CustomParticleSystem particleSystem) {
@@ -29,8 +29,10 @@ public class CustomParticle : CustomBase {
 		this.Mass = mass;
 		this.Position = position;
 		this.Velocity = velocity;
-		this.Fixed = bFixed;
+		this.SetFixed(bFixed);
 		this.LifeSpan = lifeSpan;
+
+		this.ClearForce();
 
 		this.transform.parent = particleSystem.transform;
 	}
@@ -40,7 +42,8 @@ public class CustomParticle : CustomBase {
 	}
 	
 	public void AddForce(Vector3 force) {
-		this.Force += force;
+		if (!this.Fixed) 
+			this.Force += force;
 	}
 	
 	public void SetFixed(bool bFixed) {
@@ -48,6 +51,7 @@ public class CustomParticle : CustomBase {
 		
 		if (this.Fixed) {
 			// Change visuals if fixed ?
+			this.transform.localScale = new Vector3(2f, 2f, 2f);
 		}
 		else {
 			

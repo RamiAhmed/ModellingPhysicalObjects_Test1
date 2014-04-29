@@ -9,19 +9,14 @@ public class CustomSpring : CustomBase {
 	public float RestLength { get; private set; }
 	public float Strength { get; private set; }
 	public float Damping { get; private set; }
-		
-	// Use this for initialization
-	void Start () {
-		
-	}
-	
+
 	public void Initialize(CustomParticleSystem particleSystem, CustomParticle particle1, CustomParticle particle2) {
 		Initialize(particleSystem, particle1, particle2, 1f, 1f, 0f);
 	}
 	
 	public void Initialize(CustomParticleSystem particleSystem, CustomParticle particle1, CustomParticle particle2, float restLength, float strength, float damping) {
-		
 		this.CustomParticleSystem = particleSystem;
+		this.CustomParticleSystem.Springs.Add(this);
 		
 		this.Particle1 = particle1;
 		this.Particle2 = particle2;
@@ -29,12 +24,16 @@ public class CustomSpring : CustomBase {
 		this.RestLength = restLength;
 		this.Strength = strength;
 		this.Damping = damping;
+
+//		this.transform.parent = particleSystem.transform;
 	}
-	
-	// Update is called once per frame
-	void Update () {
-		
+
+	void Update() {
+
 	}
-	
-	
+
+	void OnDrawGizmos() {
+		Gizmos.color = Color.yellow;
+		Gizmos.DrawLine(Particle1.Position, Particle2.Position);
+	}
 }
