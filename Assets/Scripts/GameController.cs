@@ -18,21 +18,17 @@ public class GameController : MonoBehaviour {
 	
 	public GameObject ParticleSystemPrefab = null;
 	public GameObject ParticlePrefab = null;
-	
-	// Use this for initialization
-	void Start () {
-		
+
+
+	private CustomParticleSystem addNewParticleSystem() {
+		return addNewParticleSystem(this.Gravity, this.Drag);
 	}
 
-	private CustomParticleSystem AddNewParticleSystem() {
-		return AddNewParticleSystem(this.Gravity, this.Drag);
-	}
-
-	private CustomParticleSystem AddNewParticleSystem(Vector3 systemGravity, float systemDrag) {
-		return AddNewParticleSystem(systemGravity, systemDrag, this.ParticleCount, this.ParticleMass, this.ParticleStartPosition, this.ParticleStartVelocity, this.ParticleDefaultFixed, this.ParticleDefaultLifespan);
+	private CustomParticleSystem addNewParticleSystem(Vector3 systemGravity, float systemDrag) {
+		return addNewParticleSystem(systemGravity, systemDrag, this.ParticleCount, this.ParticleMass, this.ParticleStartPosition, this.ParticleStartVelocity, this.ParticleDefaultFixed, this.ParticleDefaultLifespan);
 	}
 	
-	private CustomParticleSystem AddNewParticleSystem(Vector3 systemGravity, float systemDrag, int particleCount, float particleMass, Vector3 particleStartPos, Vector3 particleDefaultVelocity, bool particleFixed, float particleLifespan) {
+	private CustomParticleSystem addNewParticleSystem(Vector3 systemGravity, float systemDrag, int particleCount, float particleMass, Vector3 particleStartPos, Vector3 particleDefaultVelocity, bool particleFixed, float particleLifespan) {
 		if (ParticleSystemPrefab != null) {
 			CustomParticleSystem particleSystem = (Instantiate(ParticleSystemPrefab) as GameObject).GetComponent<CustomParticleSystem>();
 			particleSystem.Gravity = systemGravity;
@@ -69,7 +65,7 @@ public class GameController : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 		if (Input.GetKeyDown(KeyCode.Space)) {
-			AddNewParticleSystem();
+			addNewParticleSystem();
 		}
 
 		if (Input.GetKeyDown(KeyCode.Plus) || Input.GetKeyDown(KeyCode.KeypadPlus)) {
@@ -93,12 +89,12 @@ public class GameController : MonoBehaviour {
 	private void addNewBeam() {
 		Vector3 gravity = new Vector3(0f, 0f, 0f);
 		float drag = 0.0f;
-		int particleCount = 25;
+		int particleCount = 33;
 		float particleMass = 50f;
-		Vector3 particleStartPos = new Vector3(0f, 5f, 0f);
+		Vector3 particleStartPos = new Vector3(0f, 10f, 0f);
 		Vector3 particleInitialVelocity = new Vector3(Random.value, Random.value, Random.value) * Random.Range(0.5f, 5f);
 		float particleLifeSpan = 1000f + Random.Range(0f, 1000f);
-		CustomParticleSystem beamSystem = AddNewParticleSystem(gravity, drag, 0, 0f, Vector3.zero, Vector3.zero, false, 0f);
+		CustomParticleSystem beamSystem = addNewParticleSystem(gravity, drag, 0, 0f, Vector3.zero, Vector3.zero, false, 0f);
 
 		CustomParticle leaderParticle = addNewParticle(beamSystem, particleMass, particleStartPos, Vector3.zero, true, 0f);
 		leaderParticle.name = "Leader Particle";
@@ -110,24 +106,24 @@ public class GameController : MonoBehaviour {
 		float springDamping = 0.8f;
 
 		for (int i = 0; i < particleCount-1; i++) {
-			CustomParticle particle = addNewParticle(beamSystem, particleMass, particleStartPos + Random.insideUnitSphere, Vector3.zero, false, particleLifeSpan);
+			CustomParticle particle = addNewParticle(beamSystem, particleMass, particleStartPos + Random.insideUnitSphere * 10f, Vector3.zero, false, particleLifeSpan);
 
-			CustomAttraction leaderAttraction = beamSystem.gameObject.AddComponent<CustomAttraction>();
-			leaderAttraction.Initialize(beamSystem, particle, leaderParticle, leaderAttractionStrength, leaderAttractionMinimumDistance);
+			//CustomAttraction leaderAttraction = beamSystem.gameObject.AddComponent<CustomAttraction>();
+			//leaderAttraction.Initialize(beamSystem, particle, leaderParticle, leaderAttractionStrength, leaderAttractionMinimumDistance);
 
-			//CustomSpring particleSpring = beamSystem.gameObject.AddComponent<CustomSpring>();
-			//particleSpring.Initialize(beamSystem, particle, leaderParticle, springRestLength, springStrength, springDamping);
+			CustomSpring particleSpring = beamSystem.gameObject.AddComponent<CustomSpring>();
+			particleSpring.Initialize(beamSystem, particle, leaderParticle, springRestLength, springStrength, springDamping);
 		}
 
 
-
+		/*
 		for (int j = 2; j < particleCount; j++) {
 			CustomParticle particle1 = beamSystem.Particles[j-1];
 			CustomParticle particle2 = beamSystem.Particles[j];
 
 			CustomSpring particleSpring = beamSystem.gameObject.AddComponent<CustomSpring>();
 			particleSpring.Initialize(beamSystem, particle1, particle2, springRestLength, springStrength, springDamping);
-		}
+		}*/
 
 
 	}

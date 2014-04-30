@@ -40,9 +40,67 @@ public class CustomParticleSystem : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 		if (Time.time - lastSample > SamplingRate/1000f) {
-			advanceTime(Time.deltaTime);
+			float deltaTime = Time.time - lastSample;
+			advanceTime(deltaTime);
 
 			lastSample = Time.time;
+
+			//this.Gravity = new Vector3(Mathf.Cos(Time.time), 0f, Mathf.Sin(Time.time));
+
+			//this.Position = this.Position + new Vector3(Mathf.Cos(Time.time), 0f, Mathf.Sin(Time.time))/4f;
+
+			//foreach (CustomParticle particle in Particles) {
+			for (int i = 1; i < Particles.Count; i++) {
+				CustomParticle particle = Particles[i];
+				Vector3 velocityBoost = Vector3.zero;
+				float currentTime = Time.time*40f;
+				if (i % 2 == 0) {
+					if (i % 4 == 0) {
+						if (i % 8 == 0) {
+							if (i % 16 == 0) 
+								velocityBoost = new Vector3(-Mathf.Cos(currentTime), 0f, Mathf.Sin(currentTime));
+							else 
+								velocityBoost = new Vector3(0f, -Mathf.Cos(currentTime), Mathf.Sin(currentTime));
+						}
+						else {
+							velocityBoost = new Vector3(-Mathf.Cos(currentTime), Mathf.Sin(currentTime), 0f);
+						}
+					}
+					else {
+						if ((i+2) % 8 == 0)
+							velocityBoost = new Vector3(Mathf.Cos(currentTime), 0f, Mathf.Sin(currentTime));
+						else
+							velocityBoost = new Vector3(Mathf.Cos(currentTime), Mathf.Sin(currentTime), 0f);
+					}
+				}
+				else {
+					// 1 3 5 7 9 11 13 15 17 19 
+					if ((i+1) % 4 == 0) {
+						// 3 7 11 15 19
+						if ((i+1) % 8 == 0) {
+							if ((i+1) % 16 == 0)
+								velocityBoost = new Vector3(-Mathf.Cos(currentTime), 0f, -Mathf.Sin(currentTime));
+							else
+								velocityBoost = new Vector3(0f, -Mathf.Cos(currentTime), -Mathf.Sin(currentTime));
+						}
+						else
+							velocityBoost = new Vector3(-Mathf.Cos(currentTime), -Mathf.Sin(currentTime), 0f);
+					}
+					else {
+						// 1 5 9 13 17
+						if ((i+3) % 8 == 0) {
+							if ((i+3) % 16 == 0)
+								velocityBoost = new Vector3(Mathf.Cos(currentTime), 0f, -Mathf.Sin(currentTime));
+							else
+								velocityBoost = new Vector3(0f, Mathf.Cos(currentTime), -Mathf.Sin(currentTime));
+						}
+						else
+							velocityBoost = new Vector3(Mathf.Cos(currentTime), -Mathf.Sin(currentTime), 0f);
+					}
+				}
+
+				particle.Velocity += velocityBoost * deltaTime/*+ new Vector3(0f, Mathf.Sin(currentTime), 0f) * Random.Range(-2f, 2f)*/;
+			}
 		}
 	}
 	

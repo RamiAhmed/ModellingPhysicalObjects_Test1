@@ -59,18 +59,34 @@ public class CustomParticle : CustomBase {
 			
 		}
 	}
-
-	/*void OnTriggerEnter(Collider other) {
+	/*
+	void OnTriggerEnter(Collider other) {
+		//Debug.Log("TriggerEnter");
 		if (!this.Fixed) {
 			if (other.tag.Contains("Particle")) {
 				if (!other.GetComponent<CustomParticle>().Fixed) {
-					this.Velocity *= -1;
+					//this.Velocity *= -1;
+					this.AddForce(-this.Velocity * 2f);
 					Debug.Log("Particle collision!");
 				}
 			}
 		}
-	}*/
-	void OnCollisionEnter(Collision collision) { 
+	}
+	*/
+	/*
+	void OnTriggerStay(Collider other) {
+		if (!this.Fixed) {
+			if (other.tag.Contains("Particle")) {
+				if (!other.GetComponent<CustomParticle>().Fixed) {
+					//this.Velocity *= -1;
+					this.AddForce(-this.Velocity * 2f);
+					Debug.Log("Particle collision staying!");
+				}
+			}
+		}
+	}
+	*/
+	/*void OnCollisionEnter(Collision collision) { 
 		if (!this.Fixed) {
 			if (collision.gameObject.tag.Contains("Particle")) {
 				if  (!collision.gameObject.GetComponent<CustomParticle>().Fixed) {
@@ -79,6 +95,6 @@ public class CustomParticle : CustomBase {
 				}
 			}
 		}
-	}
+	}*/
 
 }
