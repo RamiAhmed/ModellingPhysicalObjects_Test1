@@ -9,11 +9,11 @@ public class CustomAttraction : CustomBase {
 	public float Strength = 0f;
 	public float MinimumDistance = 0f;
 	
-	public void Initialize(CustomParticleSystem particleSystem, CustomParticle particle1, CustomParticle particle2) {
-		Initialize(particleSystem, particle1, particle2, 1f, 0f);
+	public CustomAttraction Initialize(CustomParticleSystem particleSystem, CustomParticle particle1, CustomParticle particle2) {
+		return Initialize(particleSystem, particle1, particle2, 1f, 0.1f);
 	}
 	
-	public void Initialize(CustomParticleSystem particleSystem, CustomParticle particle1, CustomParticle particle2, float strength, float minimumDistance) {
+	public CustomAttraction Initialize(CustomParticleSystem particleSystem, CustomParticle particle1, CustomParticle particle2, float strength, float minimumDistance) {
 		this.CustomParticleSystem = particleSystem;
 		this.CustomParticleSystem.Attractions.Add(this);
 		
@@ -23,11 +23,15 @@ public class CustomAttraction : CustomBase {
 		this.Strength = strength;
 		this.MinimumDistance = minimumDistance;
 
-//		this.transform.parent = particleSystem.transform;
+		return this;
 	}
 
 	void OnDrawGizmos() {
 		Gizmos.color = Color.red;
 		Gizmos.DrawLine(Particle1.transform.parent.transform.position + Particle1.Position, Particle2.transform.parent.transform.position + Particle2.Position);
+	}
+
+	public override void Delete() {
+		Destroy(this, 0.01f);
 	}
 }

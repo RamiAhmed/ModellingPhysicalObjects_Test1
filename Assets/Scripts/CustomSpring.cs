@@ -12,11 +12,11 @@ public class CustomSpring : CustomBase {
 
 	private LineRenderer lineRef = null;
 
-	public void Initialize(CustomParticleSystem particleSystem, CustomParticle particle1, CustomParticle particle2) {
-		Initialize(particleSystem, particle1, particle2, 1f, 1f, 0f);
+	public CustomSpring Initialize(CustomParticleSystem particleSystem, CustomParticle particle1, CustomParticle particle2) {
+		return Initialize(particleSystem, particle1, particle2, 1f, 1f, 0f);
 	}
 	
-	public void Initialize(CustomParticleSystem particleSystem, CustomParticle particle1, CustomParticle particle2, float restLength, float strength, float damping) {
+	public CustomSpring Initialize(CustomParticleSystem particleSystem, CustomParticle particle1, CustomParticle particle2, float restLength, float strength, float damping) {
 		this.CustomParticleSystem = particleSystem;
 		this.CustomParticleSystem.Springs.Add(this);
 		
@@ -27,15 +27,16 @@ public class CustomSpring : CustomBase {
 		this.Strength = strength;
 		this.Damping = damping;
 
-
+		return this;
 	}
 
-	void Update() {
-
-	}
 
 	void OnDrawGizmos() {
 		Gizmos.color = Color.yellow;
 		Gizmos.DrawLine(Particle1.transform.parent.transform.position + Particle1.Position, Particle2.transform.parent.transform.position + Particle2.Position);
+	}
+
+	public override void Delete() {
+		Destroy(this, 0.01f);
 	}
 }

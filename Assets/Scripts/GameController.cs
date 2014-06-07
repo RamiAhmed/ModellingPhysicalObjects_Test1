@@ -6,6 +6,7 @@ public class GameController : MonoBehaviour {
 	
 	public List<CustomParticleSystem> ParticleSystems = new List<CustomParticleSystem>();
 
+	public bool RenderSpringsInGame = true;
 	
 	public GameObject ParticleSystemPrefab = null;
 	public GameObject ParticlePrefab = null;
@@ -68,15 +69,16 @@ public class GameController : MonoBehaviour {
 
 		if (ParticleSystems.Count > 0) {
 			foreach (CustomParticleSystem beamSystem in ParticleSystems) {
+				if (beamSystem.Particles.Count > 0) {
+					for (int i = 0; i < beamSystem.Particles.Count; i++) {
+						CustomParticle particle = beamSystem.Particles[i];
 
-				for (int i = 0; i < beamSystem.Particles.Count; i++) {
-					CustomParticle particle = beamSystem.Particles[i];
-
-					if (!particle.Fixed) {
-						particle.Velocity += Random.insideUnitSphere;
-					}
-					else {
-						particle.transform.position += particle.transform.forward/4f;
+						if (!particle.Fixed) {
+							particle.Velocity += Random.insideUnitSphere;
+						}
+						else {
+							particle.transform.position += particle.transform.forward.normalized/4f;
+						}
 					}
 				}
 			}
@@ -86,22 +88,27 @@ public class GameController : MonoBehaviour {
 				if (lastBeam != null && lastBeam.Particles.Count > 0) {
 					CustomParticle leaderParticle = lastBeam.Particles[0];
 					if (leaderParticle != null) {
-						if (beamCamera == null && lastBeam.gameObject.GetComponent<Camera>() == null) {
-							beamCamera = lastBeam.gameObject.AddComponent<Camera>();
+						Vector3 leaderPos = new Vector3(leaderParticle.Position.x, leaderParticle.Position.y, leaderParticle.Position.z);
+						if (lastBeam.GetComponentInChildren<Camera>() == null) {
+							beamCamera = (Instantiate(Resources.Load("BeamCamera")) as GameObject).GetComponent<Camera>();
 							beamCamera.nearClipPlane = 1f;
 							beamCamera.farClipPlane = 500f;
-							beamCamera.fieldOfView = 17f;
+							beamCamera.fieldOfView = 45f;
 							beamCamera.clearFlags = CameraClearFlags.SolidColor;
 							beamCamera.backgroundColor = Color.black;
 							beamCamera.rect = new Rect(0f, 0.65f, 0.65f, 0.35f);
 							beamCamera.cullingMask = (1 << LayerMask.NameToLayer("Default"));
 
-							beamCamera.transform.position = leaderParticle.Position + new Vector3(0f, 1f, 0f);
+							beamCamera.transform.parent = lastBeam.transform;
+
+							beamCamera.transform.localPosition = leaderPos + new Vector3(5f, 20f, 0f);
 							beamCamera.transform.LookAt(leaderParticle.transform.position);
+							beamCamera.transform.localPosition += new Vector3(0f, 0f, -20f);
 						}
 						else {
-							beamCamera.transform.position = leaderParticle.Position + new Vector3(0f, 1f, 0f);
+							beamCamera.transform.localPosition = leaderPos + new Vector3(5f, 20f, 0f);
 							beamCamera.transform.LookAt(leaderParticle.transform.position);
+							beamCamera.transform.localPosition += new Vector3(0f, 0f, -20f);
 						}
 					}
 				}
@@ -125,7 +132,7 @@ public class GameController : MonoBehaviour {
 	private void addNewBeamSystem() {
 		Vector3 gravity = Vector3.zero;
 		float drag = 0.1f;
-		int particleCount = 20;
+		int particleCount = 30;
 		float particleMass = 10f;
 		float particleLifeSpan = 60f;
 
@@ -137,7 +144,6 @@ public class GameController : MonoBehaviour {
 
 		CustomParticle leaderParticle = addNewParticle(beamSystem, particleMass, new Vector3(0f, 1f, 0f), Vector3.zero, true, particleLifeSpan);
 		leaderParticle.name = "Leader Particle";
-		leaderParticle.transform.rotation = playerRef.transform.rotation;
 
 
 		List<CustomParticle> stream1 = new List<CustomParticle>();

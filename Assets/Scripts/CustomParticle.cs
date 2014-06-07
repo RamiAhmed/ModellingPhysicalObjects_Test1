@@ -19,11 +19,11 @@ public class CustomParticle : CustomBase {
 	public Vector3 Force = Vector3.zero;
 
 
-	public void Initialize(CustomParticleSystem particleSystem) {
-		Initialize(particleSystem, 1f, Vector3.zero, Vector3.zero, false, 99999f);
+	public CustomParticle Initialize(CustomParticleSystem particleSystem) {
+		return Initialize(particleSystem, 1f, Vector3.zero, Vector3.zero, false, 0f);
 	}
 	
-	public void Initialize(CustomParticleSystem particleSystem, float mass, Vector3 position, Vector3 velocity, bool bFixed, float lifeSpan) {
+	public CustomParticle Initialize(CustomParticleSystem particleSystem, float mass, Vector3 position, Vector3 velocity, bool bFixed, float lifeSpan) {
 		this.CustomParticleSystem = particleSystem;
 		this.CustomParticleSystem.Particles.Add(this);
 
@@ -39,6 +39,8 @@ public class CustomParticle : CustomBase {
 		this.transform.parent = this.CustomParticleSystem.transform;
 
 		this.name = "Particle " + this.CustomParticleSystem.Particles.IndexOf(this).ToString();
+
+		return this;
 	}
 	
 	public void ClearForce() {
@@ -62,4 +64,9 @@ public class CustomParticle : CustomBase {
 		}
 	}
 
+	public override void Delete(){		
+		if (this.gameObject != null) 
+			Destroy(this.gameObject, 0.01f);
+	}
+	
 }

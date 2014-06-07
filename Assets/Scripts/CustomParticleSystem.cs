@@ -18,7 +18,7 @@ public class CustomParticleSystem : MonoBehaviour {
 	public List<CustomSpring> Springs = new List<CustomSpring>();
 	public List<CustomAttraction> Attractions = new List<CustomAttraction>();
 	
-	public float SystemTime { get; private set; }
+	public float SystemTime = 0f;
 	
 	public List<CustomPhaseSpaceState> CurrentPhaseSpaceState { get; private set; }
 
@@ -31,14 +31,26 @@ public class CustomParticleSystem : MonoBehaviour {
 		this.CurrentPhaseSpaceState = new List<CustomPhaseSpaceState>();
 	}
 	
-	public void Initialize(Vector3 gravity, float drag) {
+	public CustomParticleSystem Initialize(Vector3 gravity, float drag) {
+		return Initialize(gravity, drag, 10f, Vector3.zero);
+	}	
+
+	public CustomParticleSystem Initialize(Vector3 gravity, float drag, float samplingRate, Vector3 initialPosition) {
 		this.Gravity = gravity;
 		this.Drag = drag;
-	}	
+		this.SamplingRate = samplingRate;
+		this.Position = initialPosition;
+
+		return this;
+	}
 	
 	
 	// Update is called once per frame
 	void Update () {
+		if (this.Particles.Count <= 0) {
+			Destroy(this.gameObject, 0.1f);
+		}
+
 		if (Time.time - lastSample > SamplingRate/1000f) {
 			float deltaTime = Time.time - lastSample;
 			advanceTime(deltaTime);
@@ -47,6 +59,7 @@ public class CustomParticleSystem : MonoBehaviour {
 		}
 
 		SystemTime += Time.deltaTime;
+		advanceParticlesAges(Time.deltaTime);
 	}
 	
 	/* PRIVATE METHODS */
@@ -249,12 +262,11 @@ public class CustomParticleSystem : MonoBehaviour {
 
 			setPhaseSpaceState(newState);
 
-			advanceParticlesAges(deltaTime);
+			//advanceParticlesAges(deltaTime);
 		}
 	}
 	
-	
-	
+
 	
 	/* PUBLIC METHODS */
 	public List<Vector3> GetParticlesPositions() {
@@ -308,7 +320,7 @@ public class CustomParticleSystem : MonoBehaviour {
 	
 	
 	public void KillAttraction(CustomAttraction attraction) {
-		if (Attractions.IndexOf(attraction) >= 0) {
+		if (Attractions.Contains(attraction)) {
 			Attractions.Remove(attraction);
 			attraction.Delete();
 		}
@@ -318,7 +330,7 @@ public class CustomParticleSystem : MonoBehaviour {
 	}
 	
 	public void KillSpring(CustomSpring spring) {
-		if (Springs.IndexOf(spring) >= 0) {
+		if (Springs.Contains(spring)) {
 			Springs.Remove(spring);
 			spring.Delete();
 		}
@@ -328,7 +340,7 @@ public class CustomParticleSystem : MonoBehaviour {
 	}
 	
 	public void KillParticle(CustomParticle particle) {
-		if (Particles.IndexOf(particle) >= 0) {
+		if (Particles.Contains(particle)) {
 			
 			List<CustomAttraction> attractionsToBeKilled = new List<CustomAttraction>();
 			
