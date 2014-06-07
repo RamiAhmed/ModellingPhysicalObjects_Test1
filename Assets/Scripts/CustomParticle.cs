@@ -1,12 +1,13 @@
 ﻿using UnityEngine;
 using System.Collections;
 
+[RequireComponent(typeof(Rigidbody))]
 public class CustomParticle : CustomBase {
 	
 	public float Mass = 1f;
 	public Vector3 Position {
 		get { return this.transform.localPosition; }
-		set { this.transform.localPosition = value; }
+		set { if (value.sqrMagnitude > 0f) this.transform.localPosition = value; }
 	}
 	
 	public Vector3 Velocity = Vector3.zero;
@@ -31,10 +32,11 @@ public class CustomParticle : CustomBase {
 		this.Velocity = velocity;
 		this.SetFixed(bFixed);
 		this.LifeSpan = lifeSpan;
+		this.Age = 0f;
 
 		this.ClearForce();
 
-		this.transform.parent = particleSystem.transform;
+		this.transform.parent = this.CustomParticleSystem.transform;
 
 		this.name = "Particle " + this.CustomParticleSystem.Particles.IndexOf(this).ToString();
 	}
@@ -52,49 +54,12 @@ public class CustomParticle : CustomBase {
 		this.Fixed = bFixed;
 		
 		if (this.Fixed) {
-			// Change visuals if fixed ?
+			this.rigidbody.isKinematic = true;
 			this.transform.localScale = new Vector3(2f, 2f, 2f);
 		}
 		else {
-			
+			this.transform.localScale = new Vector3(1f, 1f, 1f);
 		}
 	}
-	/*
-	void OnTriggerEnter(Collider other) {
-		//Debug.Log("TriggerEnter");
-		if (!this.Fixed) {
-			if (other.tag.Contains("Particle")) {
-				if (!other.GetComponent<CustomParticle>().Fixed) {
-					//this.Velocity *= -1;
-					this.AddForce(-this.Velocity * 2f);
-					Debug.Log("Particle collision!");
-				}
-			}
-		}
-	}
-	*/
-	/*
-	void OnTriggerStay(Collider other) {
-		if (!this.Fixed) {
-			if (other.tag.Contains("Particle")) {
-				if (!other.GetComponent<CustomParticle>().Fixed) {
-					//this.Velocity *= -1;
-					this.AddForce(-this.Velocity * 2f);
-					Debug.Log("Particle collision staying!");
-				}
-			}
-		}
-	}
-	*/
-	/*void OnCollisionEnter(Collision collision) { 
-		if (!this.Fixed) {
-			if (collision.gameObject.tag.Contains("Particle")) {
-				if  (!collision.gameObject.GetComponent<CustomParticle>().Fixed) {
-					this.Velocity *= -1;
-					Debug.Log("Particle collision!");
-				}
-			}
-		}
-	}*/
 
 }

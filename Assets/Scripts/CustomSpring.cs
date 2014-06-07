@@ -10,6 +10,8 @@ public class CustomSpring : CustomBase {
 	public float Strength = 0f;
 	public float Damping = 0f;
 
+	private LineRenderer lineRef = null;
+
 	public void Initialize(CustomParticleSystem particleSystem, CustomParticle particle1, CustomParticle particle2) {
 		Initialize(particleSystem, particle1, particle2, 1f, 1f, 0f);
 	}
@@ -25,7 +27,7 @@ public class CustomSpring : CustomBase {
 		this.Strength = strength;
 		this.Damping = damping;
 
-//		this.transform.parent = particleSystem.transform;
+
 	}
 
 	void Update() {

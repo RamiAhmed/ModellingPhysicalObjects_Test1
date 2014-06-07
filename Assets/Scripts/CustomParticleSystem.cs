@@ -18,7 +18,7 @@ public class CustomParticleSystem : MonoBehaviour {
 	public List<CustomSpring> Springs = new List<CustomSpring>();
 	public List<CustomAttraction> Attractions = new List<CustomAttraction>();
 	
-	//public float SystemTime { get; private set; }
+	public float SystemTime { get; private set; }
 	
 	public List<CustomPhaseSpaceState> CurrentPhaseSpaceState { get; private set; }
 
@@ -26,7 +26,7 @@ public class CustomParticleSystem : MonoBehaviour {
 	
 	// Use this for initialization
 	void Start () {
-//		this.SystemTime = 0f;
+		this.SystemTime = 0f;
 
 		this.CurrentPhaseSpaceState = new List<CustomPhaseSpaceState>();
 	}
@@ -44,64 +44,9 @@ public class CustomParticleSystem : MonoBehaviour {
 			advanceTime(deltaTime);
 
 			lastSample = Time.time;
-
-			//this.Gravity = new Vector3(Mathf.Cos(Time.time), 0f, Mathf.Sin(Time.time));
-
-			//this.Position = this.Position + new Vector3(Mathf.Cos(Time.time), 0f, Mathf.Sin(Time.time))/4f;
-
-			//foreach (CustomParticle particle in Particles) {
-			for (int i = 1; i < Particles.Count; i++) {
-				CustomParticle particle = Particles[i];
-				Vector3 velocityBoost = Vector3.zero;
-				float currentTime = Time.time*40f;
-				if (i % 2 == 0) {
-					if (i % 4 == 0) {
-						if (i % 8 == 0) {
-							if (i % 16 == 0) 
-								velocityBoost = new Vector3(-Mathf.Cos(currentTime), 0f, Mathf.Sin(currentTime));
-							else 
-								velocityBoost = new Vector3(0f, -Mathf.Cos(currentTime), Mathf.Sin(currentTime));
-						}
-						else {
-							velocityBoost = new Vector3(-Mathf.Cos(currentTime), Mathf.Sin(currentTime), 0f);
-						}
-					}
-					else {
-						if ((i+2) % 8 == 0)
-							velocityBoost = new Vector3(Mathf.Cos(currentTime), 0f, Mathf.Sin(currentTime));
-						else
-							velocityBoost = new Vector3(Mathf.Cos(currentTime), Mathf.Sin(currentTime), 0f);
-					}
-				}
-				else {
-					// 1 3 5 7 9 11 13 15 17 19 
-					if ((i+1) % 4 == 0) {
-						// 3 7 11 15 19
-						if ((i+1) % 8 == 0) {
-							if ((i+1) % 16 == 0)
-								velocityBoost = new Vector3(-Mathf.Cos(currentTime), 0f, -Mathf.Sin(currentTime));
-							else
-								velocityBoost = new Vector3(0f, -Mathf.Cos(currentTime), -Mathf.Sin(currentTime));
-						}
-						else
-							velocityBoost = new Vector3(-Mathf.Cos(currentTime), -Mathf.Sin(currentTime), 0f);
-					}
-					else {
-						// 1 5 9 13 17
-						if ((i+3) % 8 == 0) {
-							if ((i+3) % 16 == 0)
-								velocityBoost = new Vector3(Mathf.Cos(currentTime), 0f, -Mathf.Sin(currentTime));
-							else
-								velocityBoost = new Vector3(0f, Mathf.Cos(currentTime), -Mathf.Sin(currentTime));
-						}
-						else
-							velocityBoost = new Vector3(Mathf.Cos(currentTime), -Mathf.Sin(currentTime), 0f);
-					}
-				}
-
-				particle.Velocity += velocityBoost * deltaTime/*+ new Vector3(0f, Mathf.Sin(currentTime), 0f) * Random.Range(-2f, 2f)*/;
-			}
 		}
+
+		SystemTime += Time.deltaTime;
 	}
 	
 	/* PRIVATE METHODS */
@@ -110,7 +55,7 @@ public class CustomParticleSystem : MonoBehaviour {
 			List<CustomParticle> particlesToBeKilled = new List<CustomParticle>();
 			
 			foreach (CustomParticle particle in Particles) {
-				if (particle.LifeSpan > 0 && particle.Age > particle.LifeSpan)
+				if (particle.LifeSpan > 0f && particle.Age > particle.LifeSpan) 
 					particlesToBeKilled.Add(particle);
 			}
 			
@@ -268,20 +213,22 @@ public class CustomParticleSystem : MonoBehaviour {
 			List<Vector3> velocities = GetParticlesVelocities();
 			List<Vector3> accelerations = GetParticlesAccelerations();
 
-			if (velocities.Count != this.Particles.Count || accelerations.Count != this.Particles.Count) {
-				Debug.LogError("ERROR: velocities, accelerations and Particles lists are not same length!!");
+			if ((velocities == null || accelerations == null) || (velocities.Count != this.Particles.Count || accelerations.Count != this.Particles.Count)) {
+				Debug.LogWarning("ERROR: velocities, accelerations and Particles lists are not same length!!");
 			}
 			else {
 				for (int i = 0; i < this.Particles.Count; i++) {
-					newState.Add(new CustomPhaseSpaceState());
+					if (this.Particles[i] != null) {
+						newState.Add(new CustomPhaseSpaceState());
 
-					newState[i].x = velocities[i].x;
-					newState[i].y = velocities[i].y;
-					newState[i].z = velocities[i].z;
+						newState[i].x = velocities[i].x;
+						newState[i].y = velocities[i].y;
+						newState[i].z = velocities[i].z;
 
-					newState[i].xd = accelerations[i].x;
-					newState[i].yd = accelerations[i].y;
-					newState[i].zd = accelerations[i].z;
+						newState[i].xd = accelerations[i].x;
+						newState[i].yd = accelerations[i].y;
+						newState[i].zd = accelerations[i].z;
+					}
 				}
 			}
 		}
@@ -408,7 +355,8 @@ public class CustomParticleSystem : MonoBehaviour {
 				KillSpring(springsToBeKilled[0]);
 				springsToBeKilled.RemoveAt(0);
 			}
-			
+	
+			Particles.Remove(particle);
 			particle.Delete();
 			
 		}

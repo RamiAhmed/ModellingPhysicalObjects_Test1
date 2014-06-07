@@ -4,41 +4,21 @@ using System.Collections.Generic;
 
 public class GameController : MonoBehaviour {
 	
-	List<CustomParticleSystem> ParticleSystems = new List<CustomParticleSystem>();
-	
-	public Vector3 Gravity = Vector3.zero;
-	public float Drag = 0f;
+	public List<CustomParticleSystem> ParticleSystems = new List<CustomParticleSystem>();
 
-	public int ParticleCount = 56;
-	public float ParticleMass = 0f;
-	public Vector3 ParticleStartPosition = Vector3.zero;
-	public Vector3 ParticleStartVelocity = Vector3.zero;
-	public bool ParticleDefaultFixed = false;
-	public float ParticleDefaultLifespan = 0f;
 	
 	public GameObject ParticleSystemPrefab = null;
 	public GameObject ParticlePrefab = null;
 
+	private GameObject playerRef = null;
+	private Camera beamCamera = null;
 
-	private CustomParticleSystem addNewParticleSystem() {
-		return addNewParticleSystem(this.Gravity, this.Drag);
-	}
 
 	private CustomParticleSystem addNewParticleSystem(Vector3 systemGravity, float systemDrag) {
-		return addNewParticleSystem(systemGravity, systemDrag, this.ParticleCount, this.ParticleMass, this.ParticleStartPosition, this.ParticleStartVelocity, this.ParticleDefaultFixed, this.ParticleDefaultLifespan);
-	}
-	
-	private CustomParticleSystem addNewParticleSystem(Vector3 systemGravity, float systemDrag, int particleCount, float particleMass, Vector3 particleStartPos, Vector3 particleDefaultVelocity, bool particleFixed, float particleLifespan) {
 		if (ParticleSystemPrefab != null) {
 			CustomParticleSystem particleSystem = (Instantiate(ParticleSystemPrefab) as GameObject).GetComponent<CustomParticleSystem>();
 			particleSystem.Gravity = systemGravity;
 			particleSystem.Drag = systemDrag;
-
-			if (particleCount > 0) {
-				for (int i = 0; i < particleCount; i++) {
-					addNewParticle(particleSystem, particleMass, particleStartPos, particleDefaultVelocity, particleFixed, particleLifespan);
-				}
-			}
 
 			ParticleSystems.Add(particleSystem);
 			return particleSystem;
@@ -61,71 +41,149 @@ public class GameController : MonoBehaviour {
 		}
 	}
 
+
+	void Start() {
+		playerRef = GameObject.FindGameObjectWithTag("Player");
+		if (playerRef == null)
+			throw new System.NullReferenceException("Player GameObject could not be found by GameController");
+	}
+
 	
 	// Update is called once per frame
 	void Update () {
-		if (Input.GetKeyDown(KeyCode.Space)) {
-			addNewParticleSystem();
-		}
-
-		if (Input.GetKeyDown(KeyCode.Plus) || Input.GetKeyDown(KeyCode.KeypadPlus)) {
-			addNewParticle(ParticleSystems[ParticleSystems.Count-1], this.ParticleMass, this.ParticleStartPosition, this.ParticleStartVelocity, this.ParticleDefaultFixed, this.ParticleDefaultLifespan);
-		}
-
 		if (Input.GetKeyDown(KeyCode.B)) {
-			addNewBeam();
+			addNewBeamSystem();
 		}
 
 		if (Input.GetKeyDown(KeyCode.Delete) || Input.GetKeyDown(KeyCode.Backspace)) {
 			//Debug.Log("DELETE");
 			if (this.ParticleSystems.Count > 0) {
-				Destroy((Object)ParticleSystems[0].gameObject, 1f);
+				Destroy(ParticleSystems[0].gameObject, 1f);
 				this.ParticleSystems.RemoveAt(0);
 				Debug.Log("DELETED first particle system");
 			}
 		}
-	}
 
-	private void addNewBeam() {
-		Vector3 gravity = new Vector3(0f, 0f, 0f);
-		float drag = 0.0f;
-		int particleCount = 33;
-		float particleMass = 50f;
-		Vector3 particleStartPos = new Vector3(0f, 10f, 0f);
-		Vector3 particleInitialVelocity = new Vector3(Random.value, Random.value, Random.value) * Random.Range(0.5f, 5f);
-		float particleLifeSpan = 1000f + Random.Range(0f, 1000f);
-		CustomParticleSystem beamSystem = addNewParticleSystem(gravity, drag, 0, 0f, Vector3.zero, Vector3.zero, false, 0f);
 
-		CustomParticle leaderParticle = addNewParticle(beamSystem, particleMass, particleStartPos, Vector3.zero, true, 0f);
-		leaderParticle.name = "Leader Particle";
 
-		float leaderAttractionStrength = 1f;
-		float leaderAttractionMinimumDistance = 5f;
-		float springRestLength = 5f;
-		float springStrength = 10f;
-		float springDamping = 0.8f;
+		if (ParticleSystems.Count > 0) {
+			foreach (CustomParticleSystem beamSystem in ParticleSystems) {
 
-		for (int i = 0; i < particleCount-1; i++) {
-			CustomParticle particle = addNewParticle(beamSystem, particleMass, particleStartPos + Random.insideUnitSphere * 10f, Vector3.zero, false, particleLifeSpan);
+				for (int i = 0; i < beamSystem.Particles.Count; i++) {
+					CustomParticle particle = beamSystem.Particles[i];
 
-			//CustomAttraction leaderAttraction = beamSystem.gameObject.AddComponent<CustomAttraction>();
-			//leaderAttraction.Initialize(beamSystem, particle, leaderParticle, leaderAttractionStrength, leaderAttractionMinimumDistance);
+					if (!particle.Fixed) {
+						particle.Velocity += Random.insideUnitSphere;
+					}
+					else {
+						particle.transform.position += particle.transform.forward/4f;
+					}
+				}
+			}
 
-			CustomSpring particleSpring = beamSystem.gameObject.AddComponent<CustomSpring>();
-			particleSpring.Initialize(beamSystem, particle, leaderParticle, springRestLength, springStrength, springDamping);
+			if (ParticleSystems.Count > 0) {
+				CustomParticleSystem lastBeam = ParticleSystems[ParticleSystems.Count-1];
+				if (lastBeam != null && lastBeam.Particles.Count > 0) {
+					CustomParticle leaderParticle = lastBeam.Particles[0];
+					if (leaderParticle != null) {
+						if (beamCamera == null && lastBeam.gameObject.GetComponent<Camera>() == null) {
+							beamCamera = lastBeam.gameObject.AddComponent<Camera>();
+							beamCamera.nearClipPlane = 1f;
+							beamCamera.farClipPlane = 500f;
+							beamCamera.fieldOfView = 17f;
+							beamCamera.clearFlags = CameraClearFlags.SolidColor;
+							beamCamera.backgroundColor = Color.black;
+							beamCamera.rect = new Rect(0f, 0.65f, 0.65f, 0.35f);
+							beamCamera.cullingMask = (1 << LayerMask.NameToLayer("Default"));
+
+							beamCamera.transform.position = leaderParticle.Position + new Vector3(0f, 1f, 0f);
+							beamCamera.transform.LookAt(leaderParticle.transform.position);
+						}
+						else {
+							beamCamera.transform.position = leaderParticle.Position + new Vector3(0f, 1f, 0f);
+							beamCamera.transform.LookAt(leaderParticle.transform.position);
+						}
+					}
+				}
+			}
 		}
-
-
-		/*
-		for (int j = 2; j < particleCount; j++) {
-			CustomParticle particle1 = beamSystem.Particles[j-1];
-			CustomParticle particle2 = beamSystem.Particles[j];
-
-			CustomSpring particleSpring = beamSystem.gameObject.AddComponent<CustomSpring>();
-			particleSpring.Initialize(beamSystem, particle1, particle2, springRestLength, springStrength, springDamping);
-		}*/
-
-
 	}
+
+	private CustomSpring addNewSpring(CustomParticleSystem particleSystem, CustomParticle particle1, CustomParticle particle2, float restLength, float strength, float damping) {
+		CustomSpring newSpring = particleSystem.gameObject.AddComponent<CustomSpring>();
+		newSpring.Initialize(particleSystem, particle1, particle2, restLength, strength, damping);
+		return newSpring;
+	}
+
+	private CustomAttraction addNewAttraction(CustomParticleSystem particleSystem, CustomParticle particle1, CustomParticle particle2, float strength, float minimumDistance) {
+		CustomAttraction newAttraction = particleSystem.gameObject.AddComponent<CustomAttraction>();
+		newAttraction.Initialize(particleSystem, particle1, particle2, strength, minimumDistance);
+		return newAttraction;
+	}
+
+
+	private void addNewBeamSystem() {
+		Vector3 gravity = Vector3.zero;
+		float drag = 0.1f;
+		int particleCount = 20;
+		float particleMass = 10f;
+		float particleLifeSpan = 60f;
+
+		CustomParticleSystem beamSystem = addNewParticleSystem(gravity, drag);
+		beamSystem.name = "BEAM SYSTEM";
+		beamSystem.transform.position = playerRef.transform.position;
+
+		float particleSeparation = 3f;
+
+		CustomParticle leaderParticle = addNewParticle(beamSystem, particleMass, new Vector3(0f, 1f, 0f), Vector3.zero, true, particleLifeSpan);
+		leaderParticle.name = "Leader Particle";
+		leaderParticle.transform.rotation = playerRef.transform.rotation;
+
+
+		List<CustomParticle> stream1 = new List<CustomParticle>();
+		List<CustomParticle> stream2 = new List<CustomParticle>();
+		List<CustomParticle> stream3 = new List<CustomParticle>();
+		List<CustomParticle> stream4 = new List<CustomParticle>();
+
+
+		float springRestLength = particleSeparation,
+			springStrength = 3f,
+			springDamping = 0.75f;
+	
+		for (int i = 0; i < Mathf.RoundToInt(particleCount/4f); i++) {
+			CustomParticle particle = addNewParticle(beamSystem, particleMass, -playerRef.transform.forward * (float)i, Vector3.zero, false, particleLifeSpan);
+			particle.name = "Stream_1-" + i.ToString();
+			stream1.Add(particle);
+
+
+			CustomParticle particle2 = addNewParticle(beamSystem, particleMass, -playerRef.transform.forward * (float)i, Vector3.zero, false, particleLifeSpan);
+			particle2.name = "Stream_2-" + i.ToString();
+			stream2.Add(particle2);
+
+
+			CustomParticle particle3 = addNewParticle(beamSystem, particleMass, -playerRef.transform.forward * (float)i, Vector3.zero, false, particleLifeSpan);
+			particle3.name = "Stream_3-" + i.ToString();
+			stream3.Add(particle3);
+
+
+			CustomParticle particle4 = addNewParticle(beamSystem, particleMass, -playerRef.transform.forward * (float)i, Vector3.zero, false, particleLifeSpan);
+			particle4.name = "Stream_4-" + i.ToString();
+			stream4.Add(particle4);
+
+			if (i > 0) {
+				addNewSpring(beamSystem, stream1[i], stream1[i-1], springRestLength, springStrength, springDamping);
+				addNewSpring(beamSystem, stream2[i], stream2[i-1], springRestLength, springStrength, springDamping);
+				addNewSpring(beamSystem, stream3[i], stream3[i-1], springRestLength, springStrength, springDamping);
+				addNewSpring(beamSystem, stream4[i], stream4[i-1], springRestLength, springStrength, springDamping);
+			}
+			else {
+				addNewSpring(beamSystem, leaderParticle, particle,  springRestLength, springStrength*1.5f, springDamping);
+				addNewSpring(beamSystem, leaderParticle, particle2, springRestLength, springStrength*1.5f, springDamping);
+				addNewSpring(beamSystem, leaderParticle, particle3, springRestLength, springStrength*1.5f, springDamping);
+				addNewSpring(beamSystem, leaderParticle, particle4, springRestLength, springStrength*1.5f, springDamping);
+			}
+		}
+	}
+	
 
 }
