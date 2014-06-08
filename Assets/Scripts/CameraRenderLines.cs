@@ -22,7 +22,7 @@ public class CameraRenderLines : MonoBehaviour {
 				GL.PushMatrix();
 				GL.Begin(GL.LINES);
 
-				GL.Color(Color.yellow);
+				//GL.Color(Color.yellow);
 
 				GL.Vertex(pos1);				
 				GL.Vertex(pos2);
@@ -38,7 +38,7 @@ public class CameraRenderLines : MonoBehaviour {
 				GL.PushMatrix();
 				GL.Begin(GL.LINES);
 
-				GL.Color(Color.red);
+				//GL.Color(Color.red);
 
 				GL.Vertex(pos1);
 				GL.Vertex(pos2);

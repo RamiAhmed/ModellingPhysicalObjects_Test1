@@ -5,6 +5,9 @@ public abstract class CustomBase : Object {
 
 	public CustomParticleSystem CustomParticleSystem { get; set; }
 
-	public abstract void Delete();
+	public CustomParticle Particle1 { get; protected set; }
+	public CustomParticle Particle2 { get; protected set; }
 
+	public abstract void UpdateGizmos();
+	public abstract void Delete();
 }

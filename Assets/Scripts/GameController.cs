@@ -42,17 +42,11 @@ public class GameController : MonoBehaviour {
 	}
 
 	private CustomSpring addNewSpring(CustomParticleSystem particleSystem, CustomParticle particle1, CustomParticle particle2, float restLength, float strength, float damping) {
-		//CustomSpring newSpring = particleSystem.gameObject.AddComponent<CustomSpring>();
-		CustomSpring newSpring = new CustomSpring();
-		newSpring.Initialize(particleSystem, particle1, particle2, restLength, strength, damping);
-		return newSpring;
+		return new CustomSpring(particleSystem, particle1, particle2, restLength, strength, damping);
 	}
 	
 	private CustomAttraction addNewAttraction(CustomParticleSystem particleSystem, CustomParticle particle1, CustomParticle particle2, float strength, float minimumDistance) {
-		//CustomAttraction newAttraction = particleSystem.gameObject.AddComponent<CustomAttraction>();
-		CustomAttraction newAttraction = new CustomAttraction();
-		newAttraction.Initialize(particleSystem, particle1, particle2, strength, minimumDistance);
-		return newAttraction;
+		return new CustomAttraction(particleSystem, particle1, particle2, strength, minimumDistance);
 	}
 
 
