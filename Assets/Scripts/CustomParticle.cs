@@ -19,7 +19,7 @@ public class CustomParticle : MonoBehaviour {
 	
 	public Vector3 Force = Vector3.zero;
 
-	public CustomParticleSystem CustomParticleSystem { get; set; }
+	public CustomParticleSystem CustomParticleSystem { get; private set; }
 
 
 	public CustomParticle Initialize(CustomParticleSystem particleSystem) {

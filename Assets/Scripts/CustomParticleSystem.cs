@@ -41,7 +41,7 @@ public class CustomParticleSystem : MonoBehaviour {
 		return this;
 	}
 
-	void UpdateParticleSystem() {
+	void FixedUpdateParticleSystem() {
 		if (Time.time - lastSample > SamplingRate/1000f) {
 			float deltaTime = Time.time - lastSample;
 			advanceTime(deltaTime);
@@ -78,7 +78,7 @@ public class CustomParticleSystem : MonoBehaviour {
 	
 	// Update is called once per frame
 	void FixedUpdate () {
-		UpdateParticleSystem();
+		FixedUpdateParticleSystem();
 	}
 
 	void LateUpdate() {
