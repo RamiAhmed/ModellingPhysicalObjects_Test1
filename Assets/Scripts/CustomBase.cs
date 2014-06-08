@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public abstract class CustomBase : MonoBehaviour {
+public abstract class CustomBase : Object {
 
 	public CustomParticleSystem CustomParticleSystem { get; set; }
 

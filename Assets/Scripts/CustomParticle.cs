@@ -1,8 +1,9 @@
 ﻿using UnityEngine;
 using System.Collections;
 
+[RequireComponent(typeof(Collider))]
 [RequireComponent(typeof(Rigidbody))]
-public class CustomParticle : CustomBase {
+public class CustomParticle : MonoBehaviour {
 	
 	public float Mass = 1f;
 	public Vector3 Position {
@@ -18,9 +19,11 @@ public class CustomParticle : CustomBase {
 	
 	public Vector3 Force = Vector3.zero;
 
+	public CustomParticleSystem CustomParticleSystem { get; set; }
+
 
 	public CustomParticle Initialize(CustomParticleSystem particleSystem) {
-		return Initialize(particleSystem, 1f, Vector3.zero, Vector3.zero, false, 0f);
+		return Initialize(particleSystem, Mass, Vector3.zero, Vector3.zero, Fixed, LifeSpan);
 	}
 	
 	public CustomParticle Initialize(CustomParticleSystem particleSystem, float mass, Vector3 position, Vector3 velocity, bool bFixed, float lifeSpan) {
@@ -64,7 +67,7 @@ public class CustomParticle : CustomBase {
 		}
 	}
 
-	public override void Delete(){		
+	public void Delete(){		
 		if (this.gameObject != null) 
 			Destroy(this.gameObject, 0.01f);
 	}

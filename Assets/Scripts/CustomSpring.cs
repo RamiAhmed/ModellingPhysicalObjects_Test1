@@ -10,8 +10,6 @@ public class CustomSpring : CustomBase {
 	public float Strength = 0f;
 	public float Damping = 0f;
 
-	private LineRenderer lineRef = null;
-
 	public CustomSpring Initialize(CustomParticleSystem particleSystem, CustomParticle particle1, CustomParticle particle2) {
 		return Initialize(particleSystem, particle1, particle2, 1f, 1f, 0f);
 	}
@@ -31,12 +29,16 @@ public class CustomSpring : CustomBase {
 	}
 
 
-	void OnDrawGizmos() {
+	public void UpdateGizmos() {
 		Gizmos.color = Color.yellow;
 		Gizmos.DrawLine(Particle1.transform.parent.transform.position + Particle1.Position, Particle2.transform.parent.transform.position + Particle2.Position);
 	}
 
+	//void OnDrawGizmos() {
+	//	UpdateGizmos();
+	//}
+
 	public override void Delete() {
-		Destroy(this, 0.01f);
+		Object.Destroy(this, 0.01f);
 	}
 }

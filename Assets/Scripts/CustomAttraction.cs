@@ -26,12 +26,16 @@ public class CustomAttraction : CustomBase {
 		return this;
 	}
 
-	void OnDrawGizmos() {
+	public void UpdateGizmos() {
 		Gizmos.color = Color.red;
 		Gizmos.DrawLine(Particle1.transform.parent.transform.position + Particle1.Position, Particle2.transform.parent.transform.position + Particle2.Position);
 	}
 
+	//void OnDrawGizmos() {
+	//	UpdateGizmos();
+	//}
+
 	public override void Delete() {
-		Destroy(this, 0.01f);
+		Object.Destroy(this, 0.01f);
 	}
 }

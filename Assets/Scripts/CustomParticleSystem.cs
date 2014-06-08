@@ -4,11 +4,13 @@ using System.Collections.Generic;
 
 public class CustomParticleSystem : MonoBehaviour {
 
+	public bool DrawGizmosInEditor = true;
+
 	public float SamplingRate = 10f; // 10 ms 
 
 	public Vector3 Position { 
 		get { return this.transform.position; }
-		set { this.transform.position = value; }
+		set { if (value.sqrMagnitude > 0f) this.transform.position = value; }
 	}
 	
 	public Vector3 Gravity = Vector3.zero;
@@ -20,19 +22,13 @@ public class CustomParticleSystem : MonoBehaviour {
 	
 	public float SystemTime = 0f;
 	
-	public List<CustomPhaseSpaceState> CurrentPhaseSpaceState { get; private set; }
+	public List<CustomPhaseSpaceState> CurrentPhaseSpaceState = new List<CustomPhaseSpaceState>();
 
 	private float lastSample = 0f;
 	
-	// Use this for initialization
-	void Start () {
-		this.SystemTime = 0f;
 
-		this.CurrentPhaseSpaceState = new List<CustomPhaseSpaceState>();
-	}
-	
 	public CustomParticleSystem Initialize(Vector3 gravity, float drag) {
-		return Initialize(gravity, drag, 10f, Vector3.zero);
+		return Initialize(gravity, drag, SamplingRate, Vector3.zero);
 	}	
 
 	public CustomParticleSystem Initialize(Vector3 gravity, float drag, float samplingRate, Vector3 initialPosition) {
@@ -40,26 +36,57 @@ public class CustomParticleSystem : MonoBehaviour {
 		this.Drag = drag;
 		this.SamplingRate = samplingRate;
 		this.Position = initialPosition;
+		this.SystemTime = 0f;
 
 		return this;
 	}
-	
-	
-	// Update is called once per frame
-	void Update () {
-		if (this.Particles.Count <= 0) {
-			Destroy(this.gameObject, 0.1f);
-		}
 
+	void UpdateParticleSystem() {
 		if (Time.time - lastSample > SamplingRate/1000f) {
 			float deltaTime = Time.time - lastSample;
 			advanceTime(deltaTime);
-
+			
 			lastSample = Time.time;
 		}
+		
+		SystemTime += Time.fixedDeltaTime;
+		advanceParticlesAges(Time.fixedDeltaTime);
 
-		SystemTime += Time.deltaTime;
-		advanceParticlesAges(Time.deltaTime);
+	}
+
+	void LateUpdateParticleSystem() {
+		if (this.Particles.Count <= 0) {
+			Destroy(this.gameObject, 0.1f);
+		}
+	}
+
+	void DrawGizmosParticleSystem() {	
+		if (DrawGizmosInEditor) {
+			if (Springs.Count > 0) {
+				foreach (CustomSpring spring in Springs) {
+					spring.UpdateGizmos();
+				}
+			}
+
+			if (Attractions.Count > 0) {
+				foreach (CustomAttraction attract in Attractions) {
+					attract.UpdateGizmos();
+				}
+			}
+		}
+	}
+	
+	// Update is called once per frame
+	void FixedUpdate () {
+		UpdateParticleSystem();
+	}
+
+	void LateUpdate() {
+		LateUpdateParticleSystem();
+	}
+
+	void OnDrawGizmos() {
+		DrawGizmosParticleSystem();
 	}
 	
 	/* PRIVATE METHODS */
