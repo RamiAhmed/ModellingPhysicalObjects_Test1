@@ -25,7 +25,6 @@ public class GameController : MonoBehaviour {
 		}
 		else {
 			throw new System.NullReferenceException("ERROR: No particle system prefab set on GameController!");
-			return null;
 		}
 	}
 
@@ -37,7 +36,6 @@ public class GameController : MonoBehaviour {
 		}
 		else {
 			throw new System.NullReferenceException("ERROR: No particle prefab set on GameController!");
-			return null;
 		}
 	}
 
@@ -92,17 +90,9 @@ public class GameController : MonoBehaviour {
 			if (lastBeam != null && lastBeam.Particles.Count > 0) {
 				CustomParticle leaderParticle = lastBeam.Particles[0];
 				if (leaderParticle != null) {
-					Vector3 leaderPos = new Vector3(leaderParticle.Position.x, leaderParticle.Position.y, leaderParticle.Position.z);
+					Vector3 leaderPos = leaderParticle.Position;
 					if (lastBeam.GetComponentInChildren<Camera>() == null) {
 						beamCamera = (Instantiate(Resources.Load("BeamCamera")) as GameObject).GetComponent<Camera>();
-						beamCamera.nearClipPlane = 1f;
-						beamCamera.farClipPlane = 500f;
-						beamCamera.fieldOfView = 45f;
-						beamCamera.clearFlags = CameraClearFlags.SolidColor;
-						beamCamera.backgroundColor = Color.black;
-						beamCamera.rect = new Rect(0f, 0.65f, 0.65f, 0.35f);
-						beamCamera.cullingMask = (1 << LayerMask.NameToLayer("Default"));
-
 						beamCamera.transform.parent = lastBeam.transform;
 
 						beamCamera.transform.localPosition = leaderPos + new Vector3(5f, 20f, 0f);
@@ -122,15 +112,23 @@ public class GameController : MonoBehaviour {
 	private void addNewBeamSystem() {
 		Vector3 gravity = playerRef.transform.forward.normalized;
 		float drag = 0.1f;
+
 		int particleCount = 30;
-		float particleMass = 10f;
-		float particleLifeSpan = 60f;
+		float particleMass = 10f,
+			  particleLifeSpan = 60f;
+
 		float samplingRate = 10f; // 10 ms
+
+		//float particleSeparation = 3f;
+
+		float springRestLength = 3f,
+			  springStrength = 3f,
+			  springDamping = 0.75f;
+
 
 		CustomParticleSystem beamSystem = addNewParticleSystem(gravity, drag, playerRef.transform.position, samplingRate);
 		beamSystem.name = "BEAM SYSTEM";
 
-		float particleSeparation = 3f;
 
 		CustomParticle leaderParticle = addNewParticle(beamSystem, particleMass, beamSystem.Position + new Vector3(0f, 1f, 0f), Vector3.zero, true, particleLifeSpan);
 		leaderParticle.name = "Leader Particle";
@@ -143,9 +141,7 @@ public class GameController : MonoBehaviour {
 		List<CustomParticle> stream4 = new List<CustomParticle>();
 
 
-		float springRestLength = particleSeparation,
-			springStrength = 3f,
-			springDamping = 0.75f;
+
 	
 		for (int i = 0; i < Mathf.RoundToInt(particleCount/4f); i++) {
 			Vector3 pos = beamSystem.Position - playerRef.transform.forward.normalized * (float)(i+1);
