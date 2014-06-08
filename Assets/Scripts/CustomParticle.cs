@@ -27,6 +27,9 @@ public class CustomParticle : MonoBehaviour {
 	}
 	
 	public CustomParticle Initialize(CustomParticleSystem particleSystem, float mass, Vector3 position, Vector3 velocity, bool bFixed, float lifeSpan) {
+		if (particleSystem == null)
+			throw new System.ArgumentNullException("particleSystem", "Cannot supply null as ParticleSystem to CustomParticle");
+
 		this.CustomParticleSystem = particleSystem;
 		this.CustomParticleSystem.Particles.Add(this);
 
