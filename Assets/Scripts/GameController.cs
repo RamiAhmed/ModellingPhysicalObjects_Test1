@@ -24,7 +24,7 @@ public class GameController : MonoBehaviour {
 			return particleSystem;
 		}
 		else {
-			Debug.LogError("ERROR: No particle system prefab set on GameController!");
+			throw new System.NullReferenceException("ERROR: No particle system prefab set on GameController!");
 			return null;
 		}
 	}
@@ -36,7 +36,7 @@ public class GameController : MonoBehaviour {
 			return particle;
 		}
 		else {
-			Debug.LogError("ERROR: No particle prefab set on GameController!");
+			throw new System.NullReferenceException("ERROR: No particle prefab set on GameController!");
 			return null;
 		}
 	}
@@ -58,21 +58,18 @@ public class GameController : MonoBehaviour {
 	}
 
 	
-	// Update is called once per frame
 	void Update () {
 		if (Input.GetKeyDown(KeyCode.B)) {
 			addNewBeamSystem();
 		}
 
 		if (Input.GetKeyDown(KeyCode.Delete) || Input.GetKeyDown(KeyCode.Backspace)) {
-			//Debug.Log("DELETE");
 			if (this.ParticleSystems.Count > 0) {
 				Destroy(ParticleSystems[0].gameObject, 1f);
 				this.ParticleSystems.RemoveAt(0);
-				Debug.Log("DELETED first particle system");
+				Debug.Log("DELETED 0th particle system in list");
 			}
 		}
-
 
 
 		if (ParticleSystems.Count > 0) {
