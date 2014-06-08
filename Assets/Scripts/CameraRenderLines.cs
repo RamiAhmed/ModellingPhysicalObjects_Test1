@@ -13,7 +13,7 @@ public class CameraRenderLines : MonoBehaviour {
 	}
 
 	void OnPostRender() {
-		if (!_gameController.RenderSpringsInGame) 
+		if (_gameController == null || !_gameController.RenderSpringsInGame) 
 			return;
 
 		foreach (CustomParticleSystem system in _gameController.ParticleSystems) {
