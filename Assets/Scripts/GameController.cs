@@ -15,10 +15,10 @@ public class GameController : MonoBehaviour {
 	private Camera beamCamera = null;
 
 
-	private CustomParticleSystem addNewParticleSystem(Vector3 systemGravity, float systemDrag) {
+	private CustomParticleSystem addNewParticleSystem(Vector3 systemGravity, float systemDrag, Vector3 initialPosition, float samplingRate) {
 		if (ParticleSystemPrefab != null) {
 			CustomParticleSystem particleSystem = (Instantiate(ParticleSystemPrefab) as GameObject).GetComponent<CustomParticleSystem>();
-			particleSystem.Initialize(systemGravity, systemDrag);
+			particleSystem.Initialize(systemGravity, systemDrag, samplingRate, initialPosition);
 
 			ParticleSystems.Add(particleSystem);
 			return particleSystem;
@@ -128,10 +128,10 @@ public class GameController : MonoBehaviour {
 		int particleCount = 30;
 		float particleMass = 10f;
 		float particleLifeSpan = 60f;
+		float samplingRate = 10f; // 10 ms
 
-		CustomParticleSystem beamSystem = addNewParticleSystem(gravity, drag);
+		CustomParticleSystem beamSystem = addNewParticleSystem(gravity, drag, playerRef.transform.position, samplingRate);
 		beamSystem.name = "BEAM SYSTEM";
-		beamSystem.Position = playerRef.transform.position;
 
 		float particleSeparation = 3f;
 
