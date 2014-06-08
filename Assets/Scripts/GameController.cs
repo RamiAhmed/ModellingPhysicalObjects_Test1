@@ -91,33 +91,31 @@ public class GameController : MonoBehaviour {
 				}
 			}
 
-			if (ParticleSystems.Count > 0) {
-				CustomParticleSystem lastBeam = ParticleSystems[ParticleSystems.Count-1];
-				if (lastBeam != null && lastBeam.Particles.Count > 0) {
-					CustomParticle leaderParticle = lastBeam.Particles[0];
-					if (leaderParticle != null) {
-						Vector3 leaderPos = new Vector3(leaderParticle.Position.x, leaderParticle.Position.y, leaderParticle.Position.z);
-						if (lastBeam.GetComponentInChildren<Camera>() == null) {
-							beamCamera = (Instantiate(Resources.Load("BeamCamera")) as GameObject).GetComponent<Camera>();
-							beamCamera.nearClipPlane = 1f;
-							beamCamera.farClipPlane = 500f;
-							beamCamera.fieldOfView = 45f;
-							beamCamera.clearFlags = CameraClearFlags.SolidColor;
-							beamCamera.backgroundColor = Color.black;
-							beamCamera.rect = new Rect(0f, 0.65f, 0.65f, 0.35f);
-							beamCamera.cullingMask = (1 << LayerMask.NameToLayer("Default"));
+			CustomParticleSystem lastBeam = ParticleSystems[ParticleSystems.Count-1];
+			if (lastBeam != null && lastBeam.Particles.Count > 0) {
+				CustomParticle leaderParticle = lastBeam.Particles[0];
+				if (leaderParticle != null) {
+					Vector3 leaderPos = new Vector3(leaderParticle.Position.x, leaderParticle.Position.y, leaderParticle.Position.z);
+					if (lastBeam.GetComponentInChildren<Camera>() == null) {
+						beamCamera = (Instantiate(Resources.Load("BeamCamera")) as GameObject).GetComponent<Camera>();
+						beamCamera.nearClipPlane = 1f;
+						beamCamera.farClipPlane = 500f;
+						beamCamera.fieldOfView = 45f;
+						beamCamera.clearFlags = CameraClearFlags.SolidColor;
+						beamCamera.backgroundColor = Color.black;
+						beamCamera.rect = new Rect(0f, 0.65f, 0.65f, 0.35f);
+						beamCamera.cullingMask = (1 << LayerMask.NameToLayer("Default"));
 
-							beamCamera.transform.parent = lastBeam.transform;
+						beamCamera.transform.parent = lastBeam.transform;
 
-							beamCamera.transform.localPosition = leaderPos + new Vector3(5f, 20f, 0f);
-							beamCamera.transform.LookAt(leaderParticle.transform.position);
-							beamCamera.transform.localPosition += new Vector3(0f, 0f, 20f);
-						}
-						else {
-							beamCamera.transform.localPosition = leaderPos + new Vector3(5f, 20f, 0f);
-							beamCamera.transform.LookAt(leaderParticle.transform.position);
-							beamCamera.transform.localPosition += new Vector3(0f, 0f, 20f);
-						}
+						beamCamera.transform.localPosition = leaderPos + new Vector3(5f, 20f, 0f);
+						beamCamera.transform.LookAt(leaderParticle.transform.position);
+						beamCamera.transform.localPosition += new Vector3(0f, 0f, 20f);
+					}
+					else {
+						beamCamera.transform.localPosition = leaderPos + new Vector3(5f, 20f, 0f);
+						beamCamera.transform.LookAt(leaderParticle.transform.position);
+						beamCamera.transform.localPosition += new Vector3(0f, 0f, 20f);
 					}
 				}
 			}
