@@ -8,6 +8,8 @@ public class CameraRenderLines : MonoBehaviour {
 
 	void Start() {
 		_gameController = GameObject.FindGameObjectWithTag("GameController").GetComponent<GameController>();
+		if (_gameController == null)
+			throw new System.NullReferenceException("CameraRenderLines could not find GameController object");
 	}
 
 	void OnPostRender() {
