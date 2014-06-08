@@ -9,6 +9,13 @@ public class CustomSpring : CustomBase {
 
 
 	public CustomSpring(CustomParticleSystem particleSystem, CustomParticle particle1, CustomParticle particle2, float restLength, float strength, float damping) {
+		if (particleSystem == null)
+			throw new System.ArgumentNullException("particleSystem", "Cannot supply null as ParticleSystem to CustomSpring");
+		if (particle1 == null)
+			throw new System.ArgumentNullException("particle1", "Cannot supply null as Particle1 to CustomSpring");
+		if (particle2 == null) 
+			throw new System.ArgumentNullException("particle2", "Cannot supply null as Particle2 to CustomSpring");
+
 		this.CustomParticleSystem = particleSystem;
 		this.CustomParticleSystem.Springs.Add(this);
 		
