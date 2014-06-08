@@ -40,7 +40,6 @@ public class CustomParticle : MonoBehaviour {
 		this.ClearForce();
 
 		this.transform.parent = this.CustomParticleSystem.transform;
-
 		this.name = "Particle " + this.CustomParticleSystem.Particles.IndexOf(this).ToString();
 
 		return this;

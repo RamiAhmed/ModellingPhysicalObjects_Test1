@@ -27,6 +27,7 @@ public class CustomParticleSystem : MonoBehaviour {
 	private float lastSample = 0f;
 	
 
+	/* INITIALIZATION */
 	public CustomParticleSystem Initialize(Vector3 gravity, float drag) {
 		return Initialize(gravity, drag, SamplingRate, Vector3.zero);
 	}	
@@ -41,6 +42,8 @@ public class CustomParticleSystem : MonoBehaviour {
 		return this;
 	}
 
+
+	/* UPDATING METHODS */
 	void FixedUpdateParticleSystem() {
 		if (Time.time - lastSample > SamplingRate/1000f) {
 			float deltaTime = Time.time - lastSample;
@@ -51,7 +54,6 @@ public class CustomParticleSystem : MonoBehaviour {
 		
 		SystemTime += Time.fixedDeltaTime;
 		advanceParticlesAges(Time.fixedDeltaTime);
-
 	}
 
 	void LateUpdateParticleSystem() {
@@ -76,7 +78,6 @@ public class CustomParticleSystem : MonoBehaviour {
 		}
 	}
 	
-	// Update is called once per frame
 	void FixedUpdate () {
 		FixedUpdateParticleSystem();
 	}
@@ -88,7 +89,8 @@ public class CustomParticleSystem : MonoBehaviour {
 	void OnDrawGizmos() {
 		DrawGizmosParticleSystem();
 	}
-	
+
+
 	/* PRIVATE METHODS */
 	private void killOldParticles() {
 		if (Particles.Count > 0) {
@@ -285,7 +287,6 @@ public class CustomParticleSystem : MonoBehaviour {
 			setPhaseSpaceState(newState);
 		}
 	}
-	
 
 	
 	/* PUBLIC METHODS */
