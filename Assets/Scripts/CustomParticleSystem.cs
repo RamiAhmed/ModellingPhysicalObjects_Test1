@@ -221,8 +221,8 @@ public class CustomParticleSystem : MonoBehaviour {
 		List<Vector3> positions = GetParticlesPositions();
 		List<Vector3> velocities = GetParticlesVelocities();
 
-		if (positions.Count != this.Particles.Count || velocities.Count != this.Particles.Count) {
-			Debug.LogError("ERROR: positions, velocities and Particles lists are not same length!!");
+		if ((positions == null || velocities == null) || (positions.Count != this.Particles.Count || velocities.Count != this.Particles.Count)) {
+			Debug.LogWarning("ERROR: positions, velocities and Particles lists are not same length or null!!");
 		}
 		else {
 			for (int i = 0; i < this.Particles.Count; i++) {
@@ -245,8 +245,6 @@ public class CustomParticleSystem : MonoBehaviour {
 		List<CustomPhaseSpaceState> newState = null;
 
 		if (this.CurrentPhaseSpaceState != null) {
-//			List<CustomPhaseSpaceState> currentPhaseSpace = getPhaseSpaceState();
-
 			aggregateAllForces();
 
 			newState = new List<CustomPhaseSpaceState>();
@@ -254,7 +252,7 @@ public class CustomParticleSystem : MonoBehaviour {
 			List<Vector3> accelerations = GetParticlesAccelerations();
 
 			if ((velocities == null || accelerations == null) || (velocities.Count != this.Particles.Count || accelerations.Count != this.Particles.Count)) {
-				Debug.LogWarning("ERROR: velocities, accelerations and Particles lists are not same length!!");
+				Debug.LogWarning("ERROR: velocities, accelerations and Particles lists are not same length or null!!");
 			}
 			else {
 				for (int i = 0; i < this.Particles.Count; i++) {
@@ -281,15 +279,10 @@ public class CustomParticleSystem : MonoBehaviour {
 		if (this.CurrentPhaseSpaceState != null) {
 			killOldParticles();
 
-			//List<CustomPhaseSpaceState> phaseSpaceState = getPhaseSpaceState();
-
 			List<CustomPhaseSpaceState> newState = computeStateDerivate();
-			//Debug.Log("Computed new phase space state: " + newState[0].ToString());
 			this.CurrentPhaseSpaceState = newState;
 
 			setPhaseSpaceState(newState);
-
-			//advanceParticlesAges(deltaTime);
 		}
 	}
 	
@@ -348,8 +341,8 @@ public class CustomParticleSystem : MonoBehaviour {
 	
 	public void KillAttraction(CustomAttraction attraction) {
 		if (Attractions.Contains(attraction)) {
-			Attractions.Remove(attraction);
 			attraction.Delete();
+			Attractions.Remove(attraction);
 		}
 		else {
 			Debug.LogWarning("KillAttraction supplied attraction parameter is invalid: " + attraction.ToString());
@@ -358,8 +351,8 @@ public class CustomParticleSystem : MonoBehaviour {
 	
 	public void KillSpring(CustomSpring spring) {
 		if (Springs.Contains(spring)) {
-			Springs.Remove(spring);
 			spring.Delete();
+			Springs.Remove(spring);
 		}
 		else {
 			Debug.LogWarning("KillSpring supplied spring parameter is invalid: " + spring.ToString());
@@ -395,9 +388,8 @@ public class CustomParticleSystem : MonoBehaviour {
 				springsToBeKilled.RemoveAt(0);
 			}
 	
-			Particles.Remove(particle);
 			particle.Delete();
-			
+			Particles.Remove(particle);
 		}
 		else {
 			Debug.LogWarning("KillParticle supplied particle parameter is invalid: " + particle.ToString());
