@@ -80,7 +80,8 @@ public class GameController : MonoBehaviour {
 							particle.Velocity += Random.insideUnitSphere;
 						}
 						else {
-							particle.transform.position += particle.transform.forward.normalized/4f;
+							if (!particle.bProhibitMovement)
+								particle.transform.position += particle.transform.forward.normalized/4f;
 						}
 					}
 				}
@@ -119,8 +120,6 @@ public class GameController : MonoBehaviour {
 
 		float samplingRate = 10f; // 10 ms
 
-		//float particleSeparation = 3f;
-
 		float springRestLength = 3f,
 			  springStrength = 3f,
 			  springDamping = 0.75f;
@@ -129,17 +128,15 @@ public class GameController : MonoBehaviour {
 		CustomParticleSystem beamSystem = addNewParticleSystem(gravity, drag, playerRef.transform.position, samplingRate);
 		beamSystem.name = "BEAM SYSTEM";
 
-
 		CustomParticle leaderParticle = addNewParticle(beamSystem, particleMass, beamSystem.Position + new Vector3(0f, 1f, 0f), Vector3.zero, true, particleLifeSpan);
 		leaderParticle.name = "Leader Particle";
 		leaderParticle.transform.rotation = playerRef.transform.rotation;
 
-
-		List<CustomParticle> stream1 = new List<CustomParticle>();
-		List<CustomParticle> stream2 = new List<CustomParticle>();
-		List<CustomParticle> stream3 = new List<CustomParticle>();
-		List<CustomParticle> stream4 = new List<CustomParticle>();
-
+		List<CustomParticle> 
+			stream1 = new List<CustomParticle>(),
+			stream2 = new List<CustomParticle>(),
+			stream3 = new List<CustomParticle>(),
+			stream4 = new List<CustomParticle>();
 
 
 	

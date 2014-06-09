@@ -21,6 +21,8 @@ public class CustomParticle : MonoBehaviour {
 
 	public CustomParticleSystem CustomParticleSystem { get; private set; }
 
+	public bool bProhibitMovement = true;
+
 
 	public CustomParticle Initialize(CustomParticleSystem particleSystem) {
 		return Initialize(particleSystem, Mass, Vector3.zero, Vector3.zero, Fixed, LifeSpan);
